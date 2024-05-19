@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: false,
       unique: true,
+      sparse: true,
       trim: true,
       lowercase: true,
       match: [
