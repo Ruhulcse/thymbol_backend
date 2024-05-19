@@ -3,6 +3,16 @@ const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
   {
+    googleId: {
+      type: String,
+      required: false,
+    },
+    displayName:{
+      type: String
+    },
+    image:{
+      type: String
+    },
     firstName: {
       type: String,
       required: true,
@@ -15,7 +25,7 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,
+      required: false,
       unique: true,
       trim: true,
       lowercase: true,
@@ -31,7 +41,7 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: false,
     },
     dateOfBirth: {
       type: Date,
@@ -70,7 +80,7 @@ const userSchema = new mongoose.Schema(
     },
     userType: {
       type: String,
-      required: true,
+      required: false,
       enum: [
         "supperadmin",
         "admin",
@@ -85,7 +95,7 @@ const userSchema = new mongoose.Schema(
     },
     userStatus: {
       type: String,
-      required: true,
+      required: false,
       enum: [
         "Pending",
         "Active",
