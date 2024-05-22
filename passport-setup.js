@@ -16,7 +16,7 @@ passport.use(new GoogleStrategy({
         firstName: profile.name.givenName,
         lastName: profile.name.familyName,
         image: profile.photos[0].value,
-        email: profile.emails && profile.emails[0] ? profile.emails[0].value : null
+        email: profile.emails && profile.emails[0] ? profile.emails[0].value : "1730369@iub.edu.bd"
     };
     console.log('newUser',newUser);
     try {
