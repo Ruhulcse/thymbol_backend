@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { protect, isShipper, isCarrier } = require("../middleware/auth");
+const validationMiddleware = require("../middleware/validationMiddleware");
+const userDto = require("../Dto/UserCreate.dto")
 const {
   Login,
   Registration,
@@ -11,7 +13,8 @@ const {
   getAllAgentUsers,
 } = require("../controllers/auth");
 
-router.route("/register").post(Registration);
+//router.route("/register", validationMiddleware(userDto)).post(Registration);
+router.post('/register', validationMiddleware(userDto), Registration);
 router.route("/login").post(Login);
 router.route("/users").get(protect, getAllUsers);
 router

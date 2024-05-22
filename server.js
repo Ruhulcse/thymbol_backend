@@ -10,6 +10,11 @@ const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const auth = require("./middleware/auth");
 const routes = require("./routes/index");
+const session = require('express-session');
+const passport = require('passport');
+const MongoStore = require('connect-mongo');
+const authRoutes = require('./routes/auth');
+require('./passport-setup');
 
 dotenv.config();
 connectDB();
@@ -30,8 +35,31 @@ app.use(express.json());
 app.use(routes);
 app.use("/api/v1", routes);
 
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use('/auth', authRoutes);
+
 app.get("/", function (req, res) {
   res.send("Backend is running successfully....");
+});
+
+app.get('/google-login', (req, res) => {
+  res.send('<h1>Home</h1><a href="/auth/google">Login with Google</a>');
+});
+
+app.get('/dashboard', (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect('/');
+  }
+  res.send('<h1>Dashboard</h1><a href="/auth/logout">Logout</a>');
 });
 
 const PORT = process.env.PORT || 5000;

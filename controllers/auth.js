@@ -28,22 +28,19 @@ const Registration = asyncHandler(async (req, res) => {
   console.log("user exist", userExists);
 
   if (userExists) {
-    res.status(202).send(new Error("user already exist"));
+    const error = new Error("user already exist");
+    res.status(400).json({ message: error.message });
   }
 
   const user = new User({
-    email: req.body.email,
+    ...req.body,
     password: req.body.password ? req.body.password : "123456",
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    userType: req.body.userType,
-    agent_code: req.body.agent_code,
   });
 
   try {
     const createUser = await user.save();
     res.json({
-      message: "successfully registration",
+      message: "Registration Successfully Complited!",
       data: createUser,
     });
   } catch (error) {
@@ -103,14 +100,15 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 });
 
+
 // Delete single user
 const deleteUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
   if (user) {
-    await user.remove();
+    await User.deleteOne({_id: req.params.id})
     res.json({ message: "User deleted successfully" });
   } else {
-    res.status(404).json({ message: "User not found" });
+    res.status(404).json({ message: "Data with given ID not found!" });
   }
 });
 
