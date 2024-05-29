@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const generateToken = require("../utils/generateToken");
+const mongoose = require("mongoose");
 
 //Login for Users
 const Login = asyncHandler(async (req, res) => {
@@ -10,12 +11,15 @@ const Login = asyncHandler(async (req, res) => {
   if (user && (await user.matchPassword(password))) {
     res.json({
       message: "login success",
-      _id: user._id,
-      email: user.email,
-      token: generateToken(user._id),
+      data: {
+        _id: user._id,
+        email: user.email,
+        token: generateToken(user._id),
+      },
+      error: false
     });
   } else {
-    res.status(202).send(new Error("invalid user name or password"));
+    res.status(202).send(new Error("Invalid email or password!"));
   }
 });
 
@@ -44,7 +48,8 @@ const Registration = asyncHandler(async (req, res) => {
       data: createUser,
     });
   } catch (error) {
-    console.log(error);
+    res.status(501).send('Error Found! Can not complete registration!');
+    //console.log(error);
   }
 });
 
@@ -62,7 +67,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 
 // Get single user by ID
 const getUserById = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id);
+  const user = await User.findById(req.params.id).select('-password')
   if (user) {
     res.json(user);
   } else {
@@ -72,31 +77,33 @@ const getUserById = asyncHandler(async (req, res) => {
 
 // Update single user
 const updateUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id);
-  if (user) {
-    user.email = req.body.email || user.email;
-    user.firstName = req.body.firstName || user.firstName;
-    user.lastName = req.body.lastName || user.lastName;
-    user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
-    user.dateOfBirth = req.body.dateOfBirth || user.dateOfBirth;
-    user.address = req.body.address || user.address;
-    user.postalCode = req.body.postalCode || user.postalCode;
-    user.nid = req.body.nid || user.nid;
-    user.passport = req.body.passport || user.passport;
-    user.userType = req.body.userType || user.userType;
-    user.agent_code = req.body.agent_code || user.agent_code;
-    user.userStatus = req.body.userStatus || user.userStatus;
-    if (req.body.password) {
-      user.password = req.body.password;
+  //const user = await User.findById(req.params.id);
+  if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        ...req.body
+      },
+      {
+        returnDocument: 'after',     // Return the updated document
+        projection: { password: 0 } // Exclude 'fieldToExclude'
+      }
+    )
+    if (updatedUser) {
+      res.json({
+        message: "User updated successfully!",
+        data: updatedUser,
+        error: false
+      });
+    } else {
+      res.status(404).send({ message: "Data With given ID not found", error: true, statusCode: 404 });
     }
-
-    const updatedUser = await user.save();
-    res.json({
-      message: "User updated successfully",
-      data: updatedUser,
-    });
   } else {
-    res.status(404).json({ message: "User not found" });
+    res.status(400).send({
+      message: "Given ID not valid!",
+      error: true,
+      statusCode: 400
+    })
   }
 });
 
@@ -105,7 +112,7 @@ const updateUser = asyncHandler(async (req, res) => {
 const deleteUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
   if (user) {
-    await User.deleteOne({_id: req.params.id})
+    await User.deleteOne({ _id: req.params.id })
     res.json({ message: "User deleted successfully" });
   } else {
     res.status(404).json({ message: "Data with given ID not found!" });

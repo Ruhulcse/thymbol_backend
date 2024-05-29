@@ -14,7 +14,8 @@ const {
 } = require("../controllers/auth");
 
 //router.route("/register", validationMiddleware(userDto)).post(Registration);
-router.post('/register', validationMiddleware(userDto), Registration);
+//router.post('/register', Registration);
+router.route('/register').post(Registration);
 router.route("/login").post(Login);
 router.route("/users").get(protect, getAllUsers);
 router

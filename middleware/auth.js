@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel.js");
+const mongoose = require('mongoose')
 
 const protect = asyncHandler(async (req, res, next) => {
   // console.log("function called ", req.headers);
@@ -13,13 +14,21 @@ const protect = asyncHandler(async (req, res, next) => {
     try {
       token = req.headers.authorization.split(" ")[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select("-password");
+      if(mongoose.Types.ObjectId.isValid(decoded.id)){
+        req.user = await User.findById(decoded.id).select("-password");
+      }else{
+        req.user = await User.find({googleId: decoded.id});
+      }
       // console.log(decoded);
       next();
     } catch (error) {
       console.error(error);
-      res.status(401);
-      throw new Error("Not authorized, token failed");
+      res.status(401).send({
+        message: "unauthorized",
+        statusCode: 401,
+        error: true
+      })
+      // throw new Error("Not authorized, token failed");
     }
   }
   if (!token) {
