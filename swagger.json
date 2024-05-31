@@ -236,12 +236,12 @@
   "definitions": {
     "register": {
       "type": "object",
-      "required": ["firstName", "lastName", "email", "password"],
+      "required": ["businessName", "userName", "email", "password"],
       "properties": {
-        "firstName": {
+        "businessName": {
           "type": "string"
         },
-        "lastName": {
+        "userName": {
           "type": "string"
         },
         "email": {
@@ -253,7 +253,7 @@
         "password": {
           "type": "string"
         },
-        "userType": {
+        "address": {
           "type": "string"
         }
       }
@@ -307,21 +307,25 @@
           "type": "string",
           "example": "6601e50217fc70b39ecc269b"
         },
-        "firstName": {
+        "businessName": {
           "type": "string",
-          "example": "Ruhul"
+          "example": "Goru khor"
         },
-        "lastName": {
+        "userName": {
           "type": "string",
-          "example": "Amin"
+          "example": "mmSohan"
         },
         "email": {
           "type": "string",
-          "example": "ruhul.cse123@gmail.com"
+          "example": "momin.sohan@gmail.com"
         },
         "phoneNumber": {
           "type": "string",
-          "example": "5867987979656"
+          "example": "01721553967"
+        },
+        "address": {
+          "type": "string",
+          "example": "Badda, Dhaka"
         },
         "userType": {
           "type": "string",
@@ -331,25 +335,11 @@
           "type": "string",
           "example": "Active"
         },
-        "passport": {
-          "type": "string",
-          "example": "575558686868686868"
+        "createdAt":{
+          "type": "string"
         },
-        "nid": {
-          "type": "string",
-          "example": "tes12344545"
-        },
-        "postalCode": {
-          "type": "string",
-          "example": "2216"
-        },
-        "address": {
-          "type": "string",
-          "example": "Dhaka,Bangladesh"
-        },
-        "dateOfBirth": {
-          "type": "string",
-          "example": "13/06/1996"
+        "updatedAt":{
+          "type": "string"
         }
       }
     }

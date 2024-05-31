@@ -2,6 +2,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const mongoose = require('mongoose');
 const User = require('./models/userModel');
+const generateToken = require("./utils/generateToken");
 require('dotenv').config();
 
 passport.use(new GoogleStrategy({
@@ -16,7 +17,8 @@ passport.use(new GoogleStrategy({
         firstName: profile.name.givenName,
         lastName: profile.name.familyName,
         image: profile.photos[0].value,
-        email: profile.emails && profile.emails[0] ? profile.emails[0].value : "1730369@iub.edu.bd"
+        email: profile.emails && profile.emails[0] ? profile.emails[0].value : `${profile.name.givenName}.${profile.id}@gmail.com`,
+        token: generateToken(profile.id)
     };
     console.log('newUser',newUser);
     try {

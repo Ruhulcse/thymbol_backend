@@ -13,14 +13,13 @@ const userSchema = new mongoose.Schema(
     image:{
       type: String
     },
-    firstName: {
+    businessName: {
       type: String,
-      required: true,
-      trim: true,
+      required: false
     },
-    lastName: {
+    userName: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
     email: {
@@ -43,6 +42,11 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: false,
+      minlength: 5
+    },
+    token: {
+      type: String,
+      required: false
     },
     dateOfBirth: {
       type: Date,
@@ -50,8 +54,7 @@ const userSchema = new mongoose.Schema(
     },
     address: {
       type: String,
-      required: false,
-      trim: true,
+      required: false
     },
     postalCode: {
       type: String,
@@ -72,27 +75,16 @@ const userSchema = new mongoose.Schema(
       sparse: true,
       trim: true,
     },
-    agent_code: {
-      type: String,
-      required: false,
-      unique: true,
-      sparse: true,
-      trim: true,
-    },
     userType: {
       type: String,
       required: false,
       enum: [
         "supperadmin",
         "admin",
-        "user",
-        "guest",
-        "carrier",
-        "shipper",
-        "broker",
-        "agent",
+        "consumer",
+        "merchant"
       ],
-      default: "user",
+      default: "merchant",
     },
     userStatus: {
       type: String,
@@ -105,7 +97,7 @@ const userSchema = new mongoose.Schema(
         "Rejected",
         "Blocked",
       ],
-      default: "Pending",
+      default: "Active",
     },
   },
   { timestamps: true }
