@@ -7,15 +7,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    displayName:{
-      type: String
+    displayName: {
+      type: String,
     },
-    image:{
-      type: String
+    image: {
+      type: String,
     },
     businessName: {
       type: String,
-      required: false
+      required: false,
     },
     userName: {
       type: String,
@@ -42,11 +42,11 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: false,
-      minlength: 5
+      minlength: 5,
     },
     token: {
       type: String,
-      required: false
+      required: false,
     },
     dateOfBirth: {
       type: Date,
@@ -54,7 +54,7 @@ const userSchema = new mongoose.Schema(
     },
     address: {
       type: String,
-      required: false
+      required: false,
     },
     postalCode: {
       type: String,
@@ -78,12 +78,7 @@ const userSchema = new mongoose.Schema(
     userType: {
       type: String,
       required: false,
-      enum: [
-        "supperadmin",
-        "admin",
-        "consumer",
-        "merchant"
-      ],
+      enum: ["supperadmin", "admin", "consumer", "merchant"],
       default: "merchant",
     },
     userStatus: {
@@ -98,6 +93,24 @@ const userSchema = new mongoose.Schema(
         "Blocked",
       ],
       default: "Active",
+    },
+    SubscriptionType: {
+      type: String,
+      required: false,
+      enum: ["free", "premium"],
+      default: "free",
+    },
+    subId: {
+      type: String,
+      required: false,
+    },
+    subEndDate: {
+      type: Date,
+      required: false,
+    },
+    subscriptionActive: {
+      type: String,
+      required: false,
     },
   },
   { timestamps: true }
