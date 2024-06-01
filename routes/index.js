@@ -1,3 +1,4 @@
 const users = require("./userRoutes");
 const payments = require("./paymentRoutes");
-module.exports = [users, payments];
+const store = require("./storeRoutes");
+module.exports = [users, store, payments];

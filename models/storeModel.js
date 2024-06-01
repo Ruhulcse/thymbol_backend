@@ -4,13 +4,21 @@ const storeSchema = new mongoose.Schema(
   {
     owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     store_name: { type: String, required: true },
-    logo: { type: String }, // URL to the logo image
-    documents: [{ type: String }], // URLs to uploaded PDF/JPEG documents
-    category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
+    logo: {
+      filePath: String,
+      fileType: String,
+      fileName: String
+    }, // URL to the logo image
+    documents: [{
+      filePath: String,
+      fileType: String,
+      fileName: String,
+    }], // URLs to uploaded PDF/JPEG documents
+    category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
     sub_category: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Subcategory",
-      required: true,
+      required: false,
     },
     address: {
       street: { type: String, required: true },
@@ -25,10 +33,11 @@ const storeSchema = new mongoose.Schema(
       type: { type: String, enum: ["Point"], required: true },
       coordinates: { type: [Number], required: true }, // [longitude, latitude]
     },
-    created_at: { type: Date, default: Date.now },
-    updated_at: { type: Date, default: Date.now },
+    // created_at: { type: Date, default: Date.now },
+    // updated_at: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("storeSchema", blogSchema);
+const Store = mongoose.model("stores", storeSchema);
+module.exports = Store;

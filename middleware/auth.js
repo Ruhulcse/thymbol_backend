@@ -19,7 +19,7 @@ const protect = asyncHandler(async (req, res, next) => {
       }else{
         req.user = await User.find({googleId: decoded.id});
       }
-      // console.log(decoded);
+      //console.log("decoded", req);
       next();
     } catch (error) {
       console.error(error);

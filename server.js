@@ -58,7 +58,12 @@ app.get("/", function (req, res) {
 });
 
 app.get("/google-login", (req, res) => {
-  res.send('<h1>Home</h1><a href="/auth/google">Login with Google</a>');
+  //res.send('<h1>Home</h1><a href="/auth/google">Login with Google</a>');
+  res.send({
+    href: "localhost:5000/auth/google",
+    error: false,
+    statusCode: 200
+  })
 });
 
 app.get("/dashboard", (req, res) => {
