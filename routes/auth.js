@@ -9,12 +9,12 @@ router.get('/google/callback',
   (req, res) => {
            // Successful authentication, return the user object
            if (req.user) {
-            res.status(200).send({data:req.user, message: "Authentication Successfull!", statusCode: 200})
-            //res.json(req.user); // Respond with the authenticated user
+            //res.status(200).send({data:req.user, message: "Authentication Successfull!", statusCode: 200})
+            res.json({data:req.user, message: "Authentication Successfull!", statusCode: 200}); // Respond with the authenticated user
         } else {
             res.status(400).send({data:undefined, message: "Authentication Failed!", statusCode: 400});
         }
-    //res.redirect('/dashboard');
+    res.redirect(`${process.env.FN_HOST}/dashboard`);
   }
 );
 
