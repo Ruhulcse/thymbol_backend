@@ -51,26 +51,10 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/auth", authRoutes);
+//app.use("/auth", authRoutes);
 
 app.get("/", function (req, res) {
   res.send("Backend is running successfully....");
-});
-
-app.get("/google-login", (req, res) => {
-  //res.send('<h1>Home</h1><a href="/auth/google">Login with Google</a>');
-  res.send({
-    href: "localhost:5000/auth/google",
-    error: false,
-    statusCode: 200
-  })
-});
-
-app.get("/dashboard", (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.redirect("/");
-  }
-  res.send('<h1>Dashboard</h1><a href="/auth/logout">Logout</a>');
 });
 
 const PORT = process.env.PORT || 5000;
