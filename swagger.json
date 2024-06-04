@@ -231,6 +231,246 @@
           }
         }
       }
+    },
+    "/stores/create-store":{
+      "post": {
+        "tags": ["Stores"],
+        "summary": "Create a single store",
+        "description": "Creates a new store with the provided information.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "form_data": {
+              "logo": "logo_file",
+              "documents": "docuement_file",
+              "jsonData": "stringifiedJsonData"
+            },
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Store"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User registered successfully",
+            "schema": {
+              "$ref": "#/definitions/registerResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/store/{id}": {
+      "get": {
+        "tags": ["Stores"],
+        "summary": "Get store by ID",
+        "description": "Retrieves a single store by ID.",
+        "produces": ["application/json"],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the store to retrieve",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single store.",
+            "schema": {
+              "$ref": "#/definitions/Store"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Stores"],
+        "summary": "Update store by ID",
+        "description": "Updates a single store's information.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the store to update",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "store",
+            "description": "User object with updated fields",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Store"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Store updated successfully."
+          },
+          "400": {
+            "description": "Invalid Store supplied"
+          },
+          "404": {
+            "description": "Store not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Stores"],
+        "summary": "Delete store by ID",
+        "description": "Deletes a single store.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the store to delete",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Store deleted successfully."
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Store not found"
+          }
+        }
+      }
+    },
+    "/store/owner-stores/{id}":{
+      "get": {
+        "tags": ["Stores"],
+        "summary": "Get stores by Owner ID",
+        "description": "Retrieves stores by owner ID.",
+        "produces": ["application/json"],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Using owner ID retrive stores",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Multiple stores of owner",
+            "schema": {
+              "$ref": "#/definitions/Store"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Store not found"
+          }
+        }
+      }
+    },
+    "/store/categories":{
+      "get": {
+        "tags": ["Stores"],
+        "summary": "Get store categories",
+        "description": "Retrieves store categories",
+        "produces": ["application/json"],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Multiple categories of stores",
+            "schema": {
+              "$ref": "#/definitions/Store"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Categories not found"
+          }
+        }
+      }
+    },
+    "store/sub-categories/{id}":{
+      "get": {
+        "tags": ["Stores"],
+        "summary": "Get sub categories by category ID",
+        "description": "Retrieves sub categories by category ID.",
+        "produces": ["application/json"],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Using category ID retrive sub categories",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Multiple  sub categories of category",
+            "schema": {
+              "$ref": ""
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Sub categories not found!"
+          }
+        }
+      } 
     }
   },
   "definitions": {
@@ -340,6 +580,61 @@
         },
         "updatedAt":{
           "type": "string"
+        }
+      }
+    },
+    "Store":{
+      "type": "object",
+      "required": ["store_name", "category", "location", "logo"],
+      "properties":{
+        "store_name":{
+          "type":"string"
+        },
+        "category":{
+          "type":"string"
+        },
+        "address":{
+          "type":"object",
+          "properties":{
+            "street":{
+              "type":"string"
+            },
+            "city":{
+              "type":"string"
+            },
+            "country":{
+              "type":"string"
+            },
+            "postal_code":{
+              "type":"string"
+            }
+          }
+        },
+        "website_link":{
+          "type": "string"
+        },
+        "social_media_link":{
+          "type": "string"
+        },
+        "business_hours":{
+          "type": "string"
+        },
+        "location":{
+          "type":"object",
+          "properties":{
+            "coordinates":{
+              "type":"array"
+            },
+            "type":{
+              "type":"string"
+            }
+          }
+        },
+        "documents":{
+          "type":"string"
+        },
+        "logo":{
+          "type":"string"
         }
       }
     }
