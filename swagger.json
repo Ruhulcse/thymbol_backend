@@ -232,7 +232,7 @@
         }
       }
     },
-    "/stores/create-store":{
+    "/stores/create-store": {
       "post": {
         "tags": ["Stores"],
         "summary": "Create a single store",
@@ -373,7 +373,7 @@
         }
       }
     },
-    "/store/owner-stores/{id}":{
+    "/store/owner-stores/{id}": {
       "get": {
         "tags": ["Stores"],
         "summary": "Get stores by Owner ID",
@@ -409,7 +409,7 @@
         }
       }
     },
-    "/store/categories":{
+    "/store/categories": {
       "get": {
         "tags": ["Stores"],
         "summary": "Get store categories",
@@ -436,7 +436,7 @@
         }
       }
     },
-    "store/sub-categories/{id}":{
+    "store/sub-categories/{id}": {
       "get": {
         "tags": ["Stores"],
         "summary": "Get sub categories by category ID",
@@ -470,7 +470,58 @@
             "description": "Sub categories not found!"
           }
         }
-      } 
+      }
+    },
+    "/voucher": {
+      "post": {
+        "tags": ["Voucher"],
+        "summary": "Create a new voucher",
+        "description": "Adds a new voucher to the database using form data.",
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "image",
+            "type": "file",
+            "description": "Image file for the voucher",
+            "required": false
+          },
+          {
+            "in": "formData",
+            "name": "voucherData",
+            "type": "string",
+            "description": "JSON string of the voucher data. Example:",
+            "required": true,
+            "example": "{\n  \"creator\": \"664d8e07c99402824cb13dc9\",\n  \"store\": \"665761d0c37b8003332547ca\",\n  \"discount\": 15,\n  \"storeName\": \"Test store\",\n  \"endDate\": \"1995-06-13\",\n  \"voucherCode\": \"PROMO123\",\n  \"redeemLimit\": 27,\n  \"condition\": \"testing it\"\n}"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Voucher created successfully"
+          },
+          "400": {
+            "description": "Invalid input data"
+          }
+        }
+      },
+      "get": {
+        "tags": ["Voucher"],
+        "summary": "Get all vouchers",
+        "description": "Retrieves all vouchers from the database.",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "A list of vouchers",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Voucher"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -575,66 +626,66 @@
           "type": "string",
           "example": "Active"
         },
-        "createdAt":{
+        "createdAt": {
           "type": "string"
         },
-        "updatedAt":{
+        "updatedAt": {
           "type": "string"
         }
       }
     },
-    "Store":{
+    "Store": {
       "type": "object",
       "required": ["store_name", "category", "location", "logo"],
-      "properties":{
-        "store_name":{
-          "type":"string"
+      "properties": {
+        "store_name": {
+          "type": "string"
         },
-        "category":{
-          "type":"string"
+        "category": {
+          "type": "string"
         },
-        "address":{
-          "type":"object",
-          "properties":{
-            "street":{
-              "type":"string"
+        "address": {
+          "type": "object",
+          "properties": {
+            "street": {
+              "type": "string"
             },
-            "city":{
-              "type":"string"
+            "city": {
+              "type": "string"
             },
-            "country":{
-              "type":"string"
+            "country": {
+              "type": "string"
             },
-            "postal_code":{
-              "type":"string"
+            "postal_code": {
+              "type": "string"
             }
           }
         },
-        "website_link":{
+        "website_link": {
           "type": "string"
         },
-        "social_media_link":{
+        "social_media_link": {
           "type": "string"
         },
-        "business_hours":{
+        "business_hours": {
           "type": "string"
         },
-        "location":{
-          "type":"object",
-          "properties":{
-            "coordinates":{
-              "type":"array"
+        "location": {
+          "type": "object",
+          "properties": {
+            "coordinates": {
+              "type": "array"
             },
-            "type":{
-              "type":"string"
+            "type": {
+              "type": "string"
             }
           }
         },
-        "documents":{
-          "type":"string"
+        "documents": {
+          "type": "string"
         },
-        "logo":{
-          "type":"string"
+        "logo": {
+          "type": "string"
         }
       }
     }
