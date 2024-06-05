@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Stripe = require("stripe");
+const { YouCanPay, Lang, CurrencyCode } = require("youcan-payment-nodejs-sdk");
 const User = require("../models/userModel");
 
 const stripe = new Stripe(
@@ -195,4 +196,29 @@ const webhook = async (req, res) => {
   res.status(200).end();
 };
 
-module.exports = { createStripeSession, webhook };
+const youcanPay = asyncHandler(async (req, res) => {
+  const youCanPayment = new YouCanPay(
+    "pri_sandbox_c42bc49a-7834-4670-a114-eb424",
+    true
+  );
+  try {
+    const paymentUrl = await youCanPayment.getPaymentUrl(
+      {
+        amount: 2000,
+        currency: CurrencyCode.MAD,
+        customer_ip: "127.0.0.1",
+        order_id: "XXXXXX",
+        success_url: "https://yourdomain.com/orders-status/success",
+        error_url: "https://yourdomain.com/orders-status/error",
+      },
+      Lang.EN
+    );
+    res.json({ paymentUrl });
+  } catch (error) {
+    console.error("Error creating payment link:", error);
+    res
+      .status(400)
+      .json({ message: "Failed to generate session", error: error.message });
+  }
+});
+module.exports = { createStripeSession, webhook, youcanPay };
