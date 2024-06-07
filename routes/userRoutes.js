@@ -11,6 +11,7 @@ const {
   updateUser,
   deleteUser,
   getAllAgentUsers,
+  getTypeWiseUsers
 } = require("../controllers/auth");
 const { setProfilePic } = require("../controllers/upload");
 
@@ -20,6 +21,7 @@ router.route("/register").post(Registration);
 router.route("/login").post(Login);
 router.route("/upload").post(setProfilePic);
 router.route("/users").get(protect, getAllUsers);
+router.route("/specefic-type-of-users").post(getTypeWiseUsers);
 router
   .route("/user/:id")
   .get(protect, getUserById)

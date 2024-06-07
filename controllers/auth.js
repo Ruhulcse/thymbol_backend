@@ -38,13 +38,14 @@ const Registration = asyncHandler(async (req, res) => {
 
   const user = new User({
     ...req.body,
+    createdBy: req.body?.createdBy ?? null,
     password: req.body.password ? req.body.password : "123456",
   });
 
   try {
     const createUser = await user.save();
     res.json({
-      message: "Registration Successfully Complited!",
+      message: req.body?.createdBy ? "Admin Successfully Created!" : "Registration Successfully Complited!",
       data: createUser,
     });
   } catch (error) {
@@ -132,6 +133,26 @@ const getAllAgentUsers = asyncHandler(async (req, res) => {
     console.log(error);
   }
 });
+
+const getTypeWiseUsers = asyncHandler(async (req, res) => {
+  const adminUsers = await User.find({
+    userType: req.body.user_type,
+    createdBy: req.body.user_id
+  })
+  if (adminUsers.length) {
+    res.status(200).send({
+      data: adminUsers,
+      message: "Admin users succesully retrive!",
+      statusCode: 200
+    })
+  } else {
+    res.status(404).send({
+      data: [],
+      message: "Data with given ID not found!",
+      statusCode: 404
+    })
+  }
+})
 module.exports = {
   Login,
   Registration,
@@ -140,4 +161,5 @@ module.exports = {
   updateUser,
   deleteUser,
   getAllAgentUsers,
+  getTypeWiseUsers
 };

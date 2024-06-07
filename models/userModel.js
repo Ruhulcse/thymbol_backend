@@ -13,6 +13,14 @@ const userSchema = new mongoose.Schema(
     image: {
       type: String,
     },
+    firstName: {
+      type: String,
+      required: false,
+    },
+    lastName: {
+      type: String,
+      required: false,
+    },
     businessName: {
       type: String,
       required: false,
@@ -112,6 +120,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    createdBy:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+    },
+    storeId:{
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Store",
+      required: false,
+    }
   },
   { timestamps: true }
 );
