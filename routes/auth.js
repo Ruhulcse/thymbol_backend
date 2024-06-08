@@ -5,7 +5,7 @@ const router = express.Router();
 router.get('/google-login', (req, res) => {
   //res.send('<h1>Home</h1><a href="/auth/google">Login with Google</a>');
   res.send({
-    href: "localhost:5000/auth/google",
+    href: "localhost:5000/google",
     error: false,
     statusCode: 200
   })
