@@ -15,6 +15,7 @@ const Login = asyncHandler(async (req, res) => {
         _id: user._id,
         email: user.email,
         token: generateToken(user._id),
+        userType: user.userType,
       },
       error: false
     });
