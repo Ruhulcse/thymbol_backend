@@ -26,4 +26,22 @@ const uploadToS3 = async (file, filePath) => {
   }
 };
 
-module.exports = { uploadToS3 };
+const checkFileExistance = async (directory, id, file_name, fileExtension) => {
+  const params = {
+    Bucket: process.env.AWS_S3_BUCKET,
+    Key: `${directory}/${id}/${file_name}.${fileExtension}`
+  };
+  try {
+    await s3.headObject(params).promise();
+    res.json({ exists: true });
+  } catch (error) {
+    if (error.code === 'NotFound') {
+      res.json({ exists: false });
+    } else {
+      console.error('Error checking file existence:', error);
+      res.status(500).json({ error: 'Server error' });
+    }
+  }
+}
+
+module.exports = { uploadToS3,checkFileExistance };

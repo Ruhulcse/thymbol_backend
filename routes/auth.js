@@ -13,16 +13,17 @@ router.get('/google-login', (req, res) => {
 router.get('/google', passport.authenticate('google', { scope: ['profile'] }));
 
 router.get('/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/' }),
+  passport.authenticate('google', { failureRedirect: `${process.env.FN_HOST}/login`, session: false }),
   (req, res) => {
            // Successful authentication, return the user object
            if (req.user) {
             //res.status(200).send({data:req.user, message: "Authentication Successfull!", statusCode: 200})
-            res.json({data:req.user, message: "Authentication Successfull!", statusCode: 200}); // Respond with the authenticated user
+            //res.json({data:req.user, message: "Authentication Successfull!", statusCode: 200}); // Respond with the authenticated user
+            res.redirect(`${process.env.FN_HOST}/auth/success?user=${encodeURIComponent(JSON.stringify(req.user))}`);
         } else {
-            res.status(400).send({data:undefined, message: "Authentication Failed!", statusCode: 400});
+          res.redirect(`${process.env.FN_HOST}/login?error=Authentication Failed`);
         }
-    res.redirect(`${process.env.FN_HOST}/dashboard`);
+    //res.redirect(`${process.env.FN_HOST}/dashboard`);
   }
 );
 
@@ -31,6 +32,12 @@ router.get('/logout', (req, res) => {
     if (err) { return next(err); }
     res.redirect('/');
   });
+});
+
+router.get('/auth/success', (req, res) => {
+  // This route handles the redirection from Google callback with user data
+  const user = req.query.user ? JSON.parse(req.query.user) : null;
+  res.status(200).json({ data: user, message: "Authentication Successful!", statusCode: 200 });
 });
 
 module.exports = router;

@@ -23,7 +23,11 @@ const app = express();
 const server = http.createServer(app);
 const io = init(server); // Initialize Socket.IO
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.FN_HOST, // The frontend origin
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, // Allow credentials
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload());
@@ -39,16 +43,24 @@ app.use(express.json());
 app.use(routes);
 app.use("/api/v1", routes);
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-  })
-);
+// app.use(
+//   session({
+//     secret: process.env.SESSION_SECRET,
+//     resave: false,
+//     saveUninitialized: false,
+//     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+//   })
+// );
 
-app.use(passport.initialize());
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true,
+  store: MongoStore.create({mongoUrl: process.env.MONGO_URI }),
+  cookie: { secure: false } // Set to true if using https
+}));
+
+//app.use(passport.initialize());
 app.use(passport.session());
 
 //app.use("/auth", authRoutes);
