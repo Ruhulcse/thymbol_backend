@@ -13,11 +13,7 @@ router.get('/google-login', (req, res) => {
 router.get(
     '/google',
     passport.authenticate('google', {
-        scope: [
-            'profile',
-            'https://www.googleapis.com/auth/userinfo.profile',
-            'https://www.googleapis.com/auth/userinfo.email',
-        ],
+        scope: ['profile', 'email'],
     })
 );
 
