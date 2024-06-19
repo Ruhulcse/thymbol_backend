@@ -9,8 +9,17 @@ const voucherSchema = new mongoose.Schema(
     voucherCode: { type: String, required: true, unique: true },
     storeName: { type: String, required: true },
     redeemLimit: { type: Number, required: true },
+    redeemUsed: { type: Number, required: false, default: 0 },
     condition: { type: String, required: false },
     imageUrl: { type: String, required: false },
+    offer:{
+      type: String,
+      required: false,
+      enum: [
+        "Buy One Get One Free",
+        "Buy One Get One Half Off"
+      ]
+    }
   },
   { timestamps: true }
 );

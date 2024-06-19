@@ -129,6 +129,14 @@ const userSchema = new mongoose.Schema(
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Store",
       required: false,
+    },
+    gender:{
+      type: String,
+      required: false,
+      enum: [
+        "male",
+        "female"
+      ]
     }
   },
   { timestamps: true }
