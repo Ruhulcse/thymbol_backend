@@ -523,6 +523,69 @@
         }
       }
     },
+    "/voucher/clipped-for-later": {
+      "post": {
+        "tags": ["Voucher"],
+        "summary": "Clipped For later use",
+        "description": "Clipped a voucher for later use",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "clipped-voucher",
+            "description": "voucher to be clipped!",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/clipped-voucher"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully added to clipped list!"
+          },
+          "501": {
+            "description": "Error Found! Can not added to clipped list!"
+          }
+        }
+      }
+    },
+    "/voucher/clipped-details/{id}": {
+      "get": {
+        "tags": ["Voucher"],
+        "summary": "Get user wise clipped voucher details!",
+        "description": "Get user wise clipped voucher details!",
+        "produces": ["application/json"],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Using user ID retrive clipped voucher details!",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Clipped Details Succesfully retrive!",
+            "schema": {
+              "$ref": ""
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Clipped Details not found!"
+          }
+        }
+      }
+    },
     "/category/create": {
       "post": {
         "tags": ["Categories"],
@@ -663,7 +726,7 @@
         }
       }
     },
-    "/category/get-all-categories":{
+    "/category/get-all-categories": {
       "get": {
         "tags": ["Categories"],
         "summary": "Get All category info",
@@ -844,7 +907,10 @@
           "type": "object",
           "properties": {
             "coordinates": {
-              "type": "array"
+              "type": "array",
+              "items": {
+              "type": "number"
+            }
             },
             "type": {
               "type": "string"
@@ -859,20 +925,37 @@
         }
       }
     },
-    "categories":{
+    "categories": {
       "type": "object",
       "required": ["category_name", "logo"],
-      "properties":{
+      "properties": {
         "category_name": {
           "type": "string"
         },
         "logo": {
           "type": "string"
         },
-        "description":{
-          "type":"string"
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "clipped-voucher":{
+      "type": "object",
+      "required": ["consume_by", "clipped_vouchers"],
+      "properties": {
+        "consume_by": {
+          "type": "string",
+          "definitions":"user id"
+        },
+        "clipped_vouchers": {
+          "type": "array",
+          "items": {
+              "type": "string"
+            }
         }
       }
     }
+    
   }
 }
