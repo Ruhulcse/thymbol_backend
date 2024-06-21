@@ -20,3 +20,6 @@ const consumerVsVoucherSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+const ConsumerVsVoucher = mongoose.model('consumervsvouchers', consumerVsVoucherSchema);
+module.exports = ConsumerVsVoucher;

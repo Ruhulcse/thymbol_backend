@@ -1,7 +1,10 @@
 const express = require("express");
-const { saveVoucherData, getAllVoucher } = require("../controllers/voucher");
+const { saveVoucherData, getAllVoucher,clippedVoucher,clippedDetails } = require("../controllers/voucher");
 const router = express.Router();
+const { protect } = require("../middleware/auth");
 
 router.route("/voucher").post(saveVoucherData).get(getAllVoucher);
+router.route("/voucher/clipped-for-later").post(protect,clippedVoucher);
+router.route("/voucher/clipped-details/:id").get(protect,clippedDetails);
 
 module.exports = router;
