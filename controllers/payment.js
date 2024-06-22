@@ -73,8 +73,8 @@ const checkActiveSubscription = async (customerId) => {
 
 const createCheckoutSession = async (customerId, priceId, email) => {
   return await stripe.checkout.sessions.create({
-    success_url: "http://localhost:3000/success",
-    cancel_url: "http://localhost:3000/cancel",
+    success_url: "https://thymbol-frontend.vercel.app/success",
+    cancel_url: "https://thymbol-frontend.vercel.app/cancel",
     payment_method_types: ["card"],
     mode: "subscription",
     billing_address_collection: "auto",
@@ -208,8 +208,8 @@ const youcanPay = asyncHandler(async (req, res) => {
         currency: CurrencyCode.MAD,
         customer_ip: "127.0.0.1",
         order_id: "XXXXXX",
-        success_url: "https://yourdomain.com/orders-status/success",
-        error_url: "https://yourdomain.com/orders-status/error",
+        success_url: "https://thymbol-frontend.vercel.app/success",
+        error_url: "https://thymbol-frontend.vercel.app/error",
       },
       Lang.EN
     );
