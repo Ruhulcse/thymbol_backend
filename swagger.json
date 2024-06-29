@@ -232,7 +232,7 @@
         }
       }
     },
-    "/stores/create-store": {
+    "/store/create-store": {
       "post": {
         "tags": ["Stores"],
         "summary": "Create a single store",
@@ -262,6 +262,49 @@
           },
           "400": {
             "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/store/nearme": {
+      "post": {
+        "tags": ["Stores"],
+        "summary": "get nearby store",
+        "description": "get nearby store",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "get nearby store",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["coordinates"],
+              "properties": {
+                "coordinates": {
+                  "type": "array",
+                  "example": "[23.8319, 90.4178]"
+                }
+              }
+            }
+          }
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Bid placed successfully"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
@@ -909,8 +952,8 @@
             "coordinates": {
               "type": "array",
               "items": {
-              "type": "number"
-            }
+                "type": "number"
+              }
             },
             "type": {
               "type": "string"
@@ -940,22 +983,21 @@
         }
       }
     },
-    "clipped-voucher":{
+    "clipped-voucher": {
       "type": "object",
       "required": ["consume_by", "clipped_vouchers"],
       "properties": {
         "consume_by": {
           "type": "string",
-          "definitions":"user id"
+          "definitions": "user id"
         },
         "clipped_vouchers": {
           "type": "array",
           "items": {
-              "type": "string"
-            }
+            "type": "string"
+          }
         }
       }
     }
-    
   }
 }

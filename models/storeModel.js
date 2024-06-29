@@ -36,14 +36,12 @@ const storeSchema = new mongoose.Schema(
     social_media_link: { type: String },
     business_hours: { type: Object },
     location: {
-      type: { type: String, enum: ["Point"], required: true },
-      coordinates: { type: [Number], required: true }, // [longitude, latitude]
+      type: { type: String, default: "Point" },
+      coordinates: [Number], // [longitude, latitude]
     },
-    // created_at: { type: Date, default: Date.now },
-    // updated_at: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );
-
+storeSchema.index({ location: "2dsphere" });
 const Store = mongoose.model("stores", storeSchema);
 module.exports = Store;

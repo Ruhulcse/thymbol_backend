@@ -448,6 +448,68 @@ const getSubCategoriesWithParentCatId = asyncHandler(async (req, res) => {
       .send({ message: "Categories not found!", error: true, data: [] });
   }
 });
+const storeNearMe = async (req, res) => {
+  const latitude = parseFloat(req.body.coordinates[0]);
+  const longitude = parseFloat(req.body.coordinates[1]);
+
+  if (!longitude || !latitude) {
+    return res
+      .status(400)
+      .json({ error: "Longitude and latitude are required." });
+  }
+
+  try {
+    const storesNearby = await Store.aggregate([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: [longitude, latitude] },
+          distanceField: "distance",
+          maxDistance: 10000, // 10 kilometers
+          spherical: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "categories", // Ensure your category collection name matches here
+          localField: "category",
+          foreignField: "_id",
+          as: "category_details",
+        },
+      },
+      {
+        $unwind: "$category_details", // Unwind the array if needed, depending on how you want to process it
+      },
+      {
+        $sort: { distance: 1 }, // Sort by distance ascending
+      },
+      {
+        $group: {
+          _id: "$category_details.category_name",
+          stores: { $push: "$$ROOT" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          category: "$_id",
+          stores: { $slice: ["$stores", 5] }, // Limit to 5 stores per category
+        },
+      },
+    ]);
+
+    if (storesNearby.length === 0) {
+      return res
+        .status(404)
+        .json({
+          message: "No nearby stores found within the specified category.",
+        });
+    }
+
+    res.json(storesNearby);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 module.exports = {
   saveStoreData,
@@ -457,4 +519,5 @@ module.exports = {
   deleteStore,
   getAllCategoryForDropDown,
   getSubCategoriesWithParentCatId,
+  storeNearMe,
 };
