@@ -7,14 +7,20 @@ const storeSchema = new mongoose.Schema(
     logo: {
       filePath: String,
       fileType: String,
-      fileName: String
-    }, // URL to the logo image
-    documents: [{
-      filePath: String,
-      fileType: String,
       fileName: String,
-    }], // URLs to uploaded PDF/JPEG documents
-    category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
+    }, // URL to the logo image
+    documents: [
+      {
+        filePath: String,
+        fileType: String,
+        fileName: String,
+      },
+    ], // URLs to uploaded PDF/JPEG documents
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
     sub_category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Subcategory",
@@ -28,7 +34,7 @@ const storeSchema = new mongoose.Schema(
     },
     website_link: { type: String },
     social_media_link: { type: String },
-    business_hours: { type: String },
+    business_hours: { type: Object },
     location: {
       type: { type: String, enum: ["Point"], required: true },
       coordinates: { type: [Number], required: true }, // [longitude, latitude]
