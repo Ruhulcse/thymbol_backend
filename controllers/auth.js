@@ -17,7 +17,7 @@ const Login = asyncHandler(async (req, res) => {
         token: generateToken(user._id),
         userType: user.userType,
       },
-      error: false
+      error: false,
     });
   } else {
     res.status(202).send(new Error("Invalid email or password!"));
@@ -46,11 +46,13 @@ const Registration = asyncHandler(async (req, res) => {
   try {
     const createUser = await user.save();
     res.json({
-      message: req.body?.createdBy ? "Admin Successfully Created!" : "Registration Successfully Complited!",
+      message: req.body?.createdBy
+        ? "Admin Successfully Created!"
+        : "Registration Successfully Complited!",
       data: createUser,
     });
   } catch (error) {
-    res.status(501).send('Error Found! Can not complete registration!');
+    res.status(501).send("Error Found! Can not complete registration!");
     //console.log(error);
   }
 });
@@ -69,7 +71,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 
 // Get single user by ID
 const getUserById = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id).select('-password')
+  const user = await User.findById(req.params.id).select("-password");
   if (user) {
     res.json(user);
   } else {
@@ -84,37 +86,42 @@ const updateUser = asyncHandler(async (req, res) => {
     const updatedUser = await User.findOneAndUpdate(
       { _id: req.params.id },
       {
-        ...req.body
+        ...req.body,
       },
       {
-        returnDocument: 'after',     // Return the updated document
-        projection: { password: 0 } // Exclude 'fieldToExclude'
+        returnDocument: "after", // Return the updated document
+        projection: { password: 0 }, // Exclude 'fieldToExclude'
       }
-    )
+    );
     if (updatedUser) {
       res.json({
         message: "User updated successfully!",
         data: updatedUser,
-        error: false
+        error: false,
       });
     } else {
-      res.status(404).send({ message: "Data With given ID not found", error: true, statusCode: 404 });
+      res
+        .status(404)
+        .send({
+          message: "Data With given ID not found",
+          error: true,
+          statusCode: 404,
+        });
     }
   } else {
     res.status(400).send({
       message: "Given ID not valid!",
       error: true,
-      statusCode: 400
-    })
+      statusCode: 400,
+    });
   }
 });
-
 
 // Delete single user
 const deleteUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
   if (user) {
-    await User.deleteOne({ _id: req.params.id })
+    await User.deleteOne({ _id: req.params.id });
     res.json({ message: "User deleted successfully" });
   } else {
     res.status(404).json({ message: "Data with given ID not found!" });
@@ -138,22 +145,24 @@ const getAllAgentUsers = asyncHandler(async (req, res) => {
 const getTypeWiseUsers = asyncHandler(async (req, res) => {
   const adminUsers = await User.find({
     userType: req.body.user_type,
-    createdBy: req.body.user_id
-  })
+    createdBy: req.body.user_id,
+  }).sort({
+    createdAt: -1,
+  });
   if (adminUsers.length) {
     res.status(200).send({
       data: adminUsers,
       message: "Admin users succesully retrive!",
-      statusCode: 200
-    })
+      statusCode: 200,
+    });
   } else {
     res.status(404).send({
       data: [],
       message: "Data with given ID not found!",
-      statusCode: 404
-    })
+      statusCode: 404,
+    });
   }
-})
+});
 module.exports = {
   Login,
   Registration,
@@ -162,5 +171,5 @@ module.exports = {
   updateUser,
   deleteUser,
   getAllAgentUsers,
-  getTypeWiseUsers
+  getTypeWiseUsers,
 };
