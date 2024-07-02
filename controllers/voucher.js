@@ -102,9 +102,28 @@ const clippedDetails = async (req, res) => {
     });
   }
 };
+const getvoucherByStore = async (req, res) => {
+  console.log("rested. ", req.params.id);
+  const store_id = req.params.id;
+  try {
+    const voucherDetails = await Voucher.find({
+      store: store_id,
+    });
+    res.json({
+      message: "all voucher for this store",
+      data: voucherDetails,
+    });
+  } catch (error) {
+    res.status(404).send({
+      data: [],
+      message: "voucher data not found!",
+    });
+  }
+};
 module.exports = {
   saveVoucherData,
   getAllVoucher,
   clippedVoucher,
   clippedDetails,
+  getvoucherByStore,
 };
