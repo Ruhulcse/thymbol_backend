@@ -33,6 +33,16 @@ const getAllVoucher = async (req, res) => {
     res.status(500).send(error);
   }
 };
+const getSingleVoucher = async (req, res) => {
+  try {
+    const voucher_id = req.params.id;
+    const vouchers = await Voucher.findById(voucher_id);
+    res.status(200).send(vouchers);
+  } catch (error) {
+    console.error("Error fetching vouchers:", error);
+    res.status(500).send(error);
+  }
+};
 const clippedVoucher = async (req, res) => {
   const clippableVouchers = req.body.clipped_vouchers;
   const dbData = await consumerVsVoucher.find({
@@ -126,4 +136,5 @@ module.exports = {
   clippedVoucher,
   clippedDetails,
   getvoucherByStore,
+  getSingleVoucher,
 };
