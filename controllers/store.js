@@ -464,7 +464,7 @@ const storeNearMe = async (req, res) => {
         $geoNear: {
           near: { type: "Point", coordinates: [longitude, latitude] },
           distanceField: "distance",
-          maxDistance: 10000, // 10 kilometers
+          maxDistance: 100000, // 10 kilometers
           spherical: true,
         },
       },
@@ -498,11 +498,9 @@ const storeNearMe = async (req, res) => {
     ]);
 
     if (storesNearby.length === 0) {
-      return res
-        .status(404)
-        .json({
-          message: "No nearby stores found within the specified category.",
-        });
+      return res.status(404).json({
+        message: "No nearby stores found within the specified category.",
+      });
     }
 
     res.json(storesNearby);
