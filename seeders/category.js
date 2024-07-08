@@ -42,7 +42,7 @@ const subcategoriesData = [
 ];
 
 const seedDatabase = async () => {
-    console.log("seeding started")
+  console.log("seeding started...");
   try {
     await Category.deleteMany({});
     await Subcategory.deleteMany({});

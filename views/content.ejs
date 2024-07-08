@@ -1,0 +1,29 @@
+<div class="card shadow-sm">
+  <div class="card-body">
+    <% if (messages.success && messages.success.length > 0) { %>
+      <div class="alert alert-success" role="alert">
+        <%= messages.success %>
+      </div>
+    <% } %>
+    <% if (messages.error && messages.error.length > 0) { %>
+      <div class="alert alert-danger" role="alert">
+        <%= messages.error %>
+      </div>
+    <% } %>
+    <form action="/reset" method="POST">
+      <div>
+        <h3 class="forgot">Forgot Password?</h3>
+        <p class="reset-motivation">No worries, we'll send you reset instructions.</p>
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input placeholder="Enter your email" type="text"
+               class="form-control <%= (messages.error && messages.error.length > 0) ? 'is-invalid' : '' %>" id="email" name="email"
+               value="<%= messages.email && messages.email.length > 0 ? messages.email : '' %>" required>
+      </div>
+      <div>
+        <button type="submit" class="btn btn-primary">Reset password</button>
+      </div>
+    </form>
+  </div>
+</div>
