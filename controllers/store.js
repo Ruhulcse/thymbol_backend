@@ -464,7 +464,7 @@ const storeNearMe = async (req, res) => {
         $geoNear: {
           near: { type: "Point", coordinates: [longitude, latitude] },
           distanceField: "distance",
-          maxDistance: 100000, // 10 kilometers
+          maxDistance: 1000000, // 100 kilometers
           spherical: true,
         },
       },
