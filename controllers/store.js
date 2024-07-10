@@ -303,15 +303,7 @@ const getWonerAllStore = asyncHandler(async (req, res) => {
     {
       $addFields: {
         store_address: {
-          $concat: [
-            "$address.street",
-            ", ",
-            "$address.city",
-            ", ",
-            "$address.postal_code",
-            ", ",
-            "$address.country",
-          ],
+          $concat: ["$address.street", ", "],
         },
         category_name: {
           $ifNull: ["$categoryInfo.category_name", ""],
