@@ -34,7 +34,17 @@ const storeSchema = new mongoose.Schema(
     },
     website_link: { type: String },
     social_media_link: { type: String },
-    business_hours: { type: Object },
+    business_hours: [
+      {
+        monday: { type: String },
+        tuesday: { type: String },
+        wednesday: { type: String },
+        thursday: { type: String },
+        friday: { type: String },
+        saturday: { type: String },
+        sunday: { type: String },
+      },
+    ],
     location: {
       type: { type: String, default: "Point" },
       coordinates: [Number], // [longitude, latitude]
