@@ -11,7 +11,11 @@ const voucherSchema = new mongoose.Schema(
     redeemLimit: { type: Number, required: true },
     redeemUsed: { type: Number, required: false, default: 0 },
     condition: { type: String, required: false },
-    imageUrl: { type: String, required: false },
+    logo: {
+      filePath: String,
+      fileType: String,
+      fileName: String,
+    }, // URL to the logo image
     offer: {
       type: String,
       required: false,

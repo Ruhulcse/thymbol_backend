@@ -1,4 +1,5 @@
 const asyncHandler = require("express-async-handler");
+const path = require("path");
 const { uploadToS3 } = require("../utils/functions");
 const Voucher = require("../models/voucherModel");
 const consumerVsVoucher = require("../models/consumerVsVoucherModel");
@@ -15,10 +16,45 @@ const saveVoucherData = async (req, res) => {
     // Save store data into MongoDB
     const voucherInfo = new Voucher(parsedVoucherData);
     const createdVoucher = await voucherInfo.save(); // Remember to await the save operation
+    if (image) {
+      const updatedLogoDetails = await updateVoucherLogo(
+        createdVoucher._id,
+        image
+      );
+    }
     res.status(201).send(createdVoucher);
   } catch (error) {
     console.error("error is ", error);
     res.status(500).send(error);
+  }
+};
+const updateVoucherLogo = async (voucherId, file) => {
+  const filetypes = /jpeg|jpg|png|pdf|docx/;
+  const extname = filetypes.test(path.extname(file.name).toLowerCase());
+  const mimetype = filetypes.test(file.mimetype);
+  const fileExtension = file.mimetype.split("/")[1];
+  const directory = "voucher";
+  const timestamp = Date.now();
+  const logoFilePath = `${directory}/${voucherId}/logo_${timestamp}.${fileExtension}`;
+  if (mimetype && extname) {
+    const result = await uploadToS3(file, logoFilePath);
+    if (result) {
+      const logoDetails = {
+        filePath: result.Location,
+        fileType: file.mimetype,
+        fileName: file.name,
+      };
+      const updatedVoucher = await Voucher.findByIdAndUpdate(
+        voucherId,
+        { logo: logoDetails },
+        { new: true }
+      );
+      return updatedVoucher;
+    } else {
+      throw new Error("Can not update store logo!");
+    }
+  } else {
+    throw new Error("Invalid file type!");
   }
 };
 const getAllVoucher = async (req, res) => {
