@@ -5,4 +5,5 @@ const voucher = require("./voucherRoutes");
 const auth = require("./auth");
 const category = require('./categoryRoutes')
 const passwordReset = require('./passwordResetRoutes')
-module.exports = [users, store, payments, auth, voucher, category, passwordReset];
+const pushNotification = require("./pushNotificationRoutes");
+module.exports = [users, store, payments, auth, voucher, category, passwordReset,pushNotification];
