@@ -6,7 +6,7 @@ const qrCodeSchema = new mongoose.Schema(
     voucher: { type: mongoose.Schema.Types.ObjectId, ref: "voucher" },
     voucherCode: { type: String, required: true, unique: true },
     scanner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    is_active: { type: Boolean, required: true, default: false },
+    is_scanned: { type: Boolean, required: true, default: false },
   },
   { timestamps: true }
 );
