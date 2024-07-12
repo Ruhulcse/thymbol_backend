@@ -31,7 +31,7 @@ router
   .get(protect, getSubCategoriesWithParentCatId);
 router
   .route("/store/:id")
-  .get(protect, viewStore)
+  .get(viewStore)
   .put(protect, editStore)
   .delete(protect, deleteStore);
 
