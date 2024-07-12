@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Store = require("../models/storeModel");
+const User = require("../models/userModel");
 const multer = require("../utils/multerConfig");
 const path = require("path");
 const { uploadToS3 } = require("../utils/functions");
@@ -8,6 +9,7 @@ const Category = require("../models/categoryModel");
 const Subcategory = require("../models/subCategoryModel");
 
 const saveStoreData = async (req, res) => {
+  //console.log("req.files", req.files)
   const storeLogo = req.files.logo;
   const storeDocuments = req.files.documents;
   let storeData;
@@ -19,64 +21,72 @@ const saveStoreData = async (req, res) => {
       return res.status(400).json({ error: "Invalid JSON data" });
     }
   }
-  const sencondParseData = JSON.parse(storeData);
-  //console.log('sencondParseData', sencondParseData);
-  const {
-    store_name,
-    category,
-    address,
-    website_link,
-    social_media_link,
-    business_hours,
-    location,
-  } = sencondParseData;
-  const owner = req.user._id;
-  // Validate JSON data against the schema
-  const newStore = new Store({
-    owner,
-    store_name,
-    category,
-    address,
-    website_link,
-    social_media_link,
-    business_hours,
-    location,
-  });
-
-  try {
-    // Save the store to get the store ID
-    const savedStore = await newStore.save();
-    req.storeId = savedStore._id;
-    let returnUpdateStore = savedStore;
-    if (storeLogo) {
-      const updatedLogoDetails = await updateStoreLogo(
-        savedStore._id,
-        storeLogo
-      );
-      returnUpdateStore = updatedLogoDetails;
-    }
-    if (storeDocuments) {
-      const updateStroeWithDoc = await updateStoreDocuments(
-        savedStore._id,
-        storeDocuments
-      );
-      returnUpdateStore = updateStroeWithDoc;
-    }
-
-    res.status(201).send({
-      data: returnUpdateStore,
-      message: "Store Successfully Creted!",
-      statusCode: 201,
-      error: false,
+  const prevStoreInfo = await Store.find({ owner: new mongoose.Types.ObjectId(req.user._id) })
+  const userInfo = await User.findById(new mongoose.Types.ObjectId(req.user._id)).select("-password");
+  if (userInfo.SubscriptionType === "free" && prevStoreInfo.length >= 2) {
+    res.status(400).send({
+      message: "limit exceeded! Please update your subscription package!"
+    })
+  } else {
+    const sencondParseData = JSON.parse(storeData);
+    //console.log('sencondParseData', sencondParseData);
+    const {
+      store_name,
+      category,
+      address,
+      website_link,
+      social_media_link,
+      business_hours,
+      location,
+    } = sencondParseData;
+    const owner = req.user._id;
+    // Validate JSON data against the schema
+    const newStore = new Store({
+      owner,
+      store_name,
+      category,
+      address,
+      website_link,
+      social_media_link,
+      business_hours,
+      location,
     });
-  } catch (err) {
-    console.error(err);
-    res.status(501).send({
-      error: true,
-      data: [],
-      statusCode: 501,
-      message: "Error Found! Can not create store!",
-    });
+
+    try {
+      // Save the store to get the store ID
+      const savedStore = await newStore.save();
+      req.storeId = savedStore._id;
+      let returnUpdateStore = savedStore;
+      if (storeLogo) {
+        const updatedLogoDetails = await updateStoreLogo(
+          savedStore._id,
+          storeLogo
+        );
+        returnUpdateStore = updatedLogoDetails;
+      }
+      if (storeDocuments) {
+        const updateStroeWithDoc = await updateStoreDocuments(
+          savedStore._id,
+          storeDocuments
+        );
+        returnUpdateStore = updateStroeWithDoc;
+      }
+
+      res.status(201).send({
+        data: returnUpdateStore,
+        message: "Store Successfully Creted!",
+        statusCode: 201,
+        error: false,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(501).send({
+        error: true,
+        data: [],
+        statusCode: 501,
+        message: "Error Found! Can not create store!",
+      });
+    }
   }
 };
 
