@@ -36,6 +36,43 @@ const getQRdata = async (req, res) => {
   }
 };
 
+const scanQRCode = async (req, res) => {
+  const scanner = req.user._id;
+  const { voucher, voucherCode, creator } = req.body;
+  try {
+    //first search QR code for this particular user
+    const QRdata = await QRcode.findOne({
+      creator: creator,
+      voucher: voucher,
+      is_scanned: false,
+    });
+    if (!QRdata) {
+      res.status(404).send({
+        // 409 Conflict might be more appropriate here
+        message: "Invalid QR Code",
+        statusCode: 404,
+        error: true,
+      });
+    } else {
+      console.log("QR code  Exist ", QRdata);
+      QRdata.is_scanned = true;
+      QRdata.scanner = scanner; // Optionally record who scanned it
+      console.log("data ", QRdata);
+      await QRdata.save();
+      res.status(201).send({
+        data: QRdata,
+        message: "Successfully scanned QR code",
+        statusCode: 201,
+        error: false,
+      });
+    }
+  } catch (error) {
+    console.log("errror ", error);
+    res.status(500).send(error);
+  }
+};
+
 module.exports = {
   getQRdata,
+  scanQRCode,
 };
