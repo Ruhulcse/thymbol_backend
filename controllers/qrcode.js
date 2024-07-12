@@ -47,10 +47,10 @@ const scanQRCode = async (req, res) => {
       is_scanned: false,
     });
     if (!QRdata) {
-      res.status(404).send({
+      res.status(409).send({
         // 409 Conflict might be more appropriate here
-        message: "Invalid QR Code",
-        statusCode: 404,
+        message: "Already has been scanned",
+        statusCode: 409,
         error: true,
       });
     } else {
