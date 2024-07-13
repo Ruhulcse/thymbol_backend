@@ -6,7 +6,8 @@ const {
     createPushNotification,
     getPushNotification,
     deletePushNotification,
-    getAllNotification
+    getAllNotification,
+    updatePushNotification
 
 } = require("../controllers/pushNotification")
 
@@ -16,5 +17,6 @@ router.route("/push-notificaton/delete").delete(protect, deletePushNotification)
 router
     .route("/push-notificaton/:id")
     .get(protect, getPushNotification)
+    .patch(protect, updatePushNotification)
 
 module.exports = router;

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const pushNotification = require("../models/pushNotificationModel");
 const { ObjectId } = require('mongodb');
+const asyncHandler = require("express-async-handler");
 
 const createPushNotification = async (req, res) => {
     const newNotification = new pushNotification({ ...req.body });
@@ -62,10 +63,47 @@ const deletePushNotification = async (req, res) => {
     }
 }
 
+const updatePushNotification = asyncHandler(async (req, res) => {
+    //const user = await User.findById(req.params.id);
+    if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+        const updateNotification = await pushNotification.findOneAndUpdate(
+            { _id: req.params.id },
+            {
+                ...req.body,
+            },
+            {
+                returnDocument: "after", // Return the updated document
+            }
+        );
+        if (updateNotification) {
+            res.json({
+                message: "Notification updated successfully!",
+                data: updateNotification,
+                error: false,
+            });
+        } else {
+            res
+                .status(404)
+                .send({
+                    message: "Data With given ID not found",
+                    error: true,
+                    statusCode: 404,
+                });
+        }
+    } else {
+        res.status(400).send({
+            message: "Given ID not valid!",
+            error: true,
+            statusCode: 400,
+        });
+    }
+});
+
 module.exports = {
     createPushNotification,
     getPushNotification,
     deletePushNotification,
-    getAllNotification
+    getAllNotification,
+    updatePushNotification
 
 }

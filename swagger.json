@@ -601,6 +601,76 @@
             "description": "Clipped Details not found!"
           }
         }
+      },
+      "patch": {
+        "tags": ["Voucher"],
+        "summary": "Update Single voucher!",
+        "description": "Update Single voucher!",
+        "produces": ["application/json"],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Use voucher id to Update voucher!",
+            "type": "string",
+            "example": "665ccdea316ee50600aa3e30"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "voucher Updated successfully",
+            "schema": {
+              "$ref": ""
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Data with given ID not found!"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Voucher"],
+        "summary": "Delete Single voucher!",
+        "description": "Delete Single voucher details!",
+        "produces": ["application/json"],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Use voucher id to delete voucher!",
+            "type": "string",
+            "example": "665ccdea316ee50600aa3e30"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "voucher deleted successfully",
+            "schema": {
+              "$ref": ""
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Data with given ID not found!"
+          }
+        }
       }
     },
     "/voucher/clipped-for-later": {

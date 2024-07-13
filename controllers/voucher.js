@@ -1,9 +1,9 @@
 const asyncHandler = require("express-async-handler");
+const mongoose = require("mongoose");
 const path = require("path");
 const { uploadToS3 } = require("../utils/functions");
 const Voucher = require("../models/voucherModel");
 const consumerVsVoucher = require("../models/consumerVsVoucherModel");
-const mongoose = require("mongoose");
 const Store = require("../models/storeModel");
 
 const saveVoucherData = async (req, res) => {
@@ -240,6 +240,57 @@ const getvoucherByStore = async (req, res) => {
     });
   }
 };
+const deleteVoucher = asyncHandler(async (req, res) => {
+  const voucher = await Voucher.findById(req.params.id);
+  if (voucher) {
+    await voucher.deleteOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+    res.status(200).send({
+      message: "voucher deleted successfully!",
+      error: false,
+      statusCode: 200,
+    });
+  } else {
+    res.status(404).send({
+      message: "Data with given ID not found!",
+      error: true,
+      statusCode: 404,
+    });
+  }
+});
+const updateVoucherDetails = async (req, res) => {
+  if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+    const updateVoucher = await Voucher.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        ...req.body,
+      },
+      {
+        returnDocument: "after", // Return the updated document
+      }
+    );
+    if (updateVoucher) {
+      res.json({
+        message: "Vocher updated successfully!",
+        data: updateVoucher,
+        error: false,
+      });
+    } else {
+      res.status(404).send({
+        message: "Data With given ID not found",
+        error: true,
+        statusCode: 404,
+      });
+    }
+  } else {
+    res.status(400).send({
+      message: "Given ID not valid!",
+      error: true,
+      statusCode: 400,
+    });
+  }
+};
 module.exports = {
   saveVoucherData,
   getAllVoucher,
@@ -249,4 +300,6 @@ module.exports = {
   getSingleVoucher,
   addToFavourite,
   getFavouriteStores,
+  deleteVoucher,
+  updateVoucherDetails,
 };
