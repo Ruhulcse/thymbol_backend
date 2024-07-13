@@ -3,6 +3,8 @@ const path = require("path");
 const { uploadToS3 } = require("../utils/functions");
 const Voucher = require("../models/voucherModel");
 const consumerVsVoucher = require("../models/consumerVsVoucherModel");
+const mongoose = require("mongoose");
+const Store = require("../models/storeModel");
 
 const saveVoucherData = async (req, res) => {
   const image = req.files.image;
@@ -122,6 +124,78 @@ const clippedVoucher = async (req, res) => {
     }
   }
 };
+const addToFavourite = async (req, res) => {
+  const store_id = req.body.favourite_stores;
+  const consume_by = req.user._id;
+
+  try {
+    // Ensure the provided store_id is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(store_id)) {
+      return res.status(400).json({ message: "Invalid store ID" });
+    }
+
+    // Check if the store is already in the user's favourite stores
+    const consumer = await consumerVsVoucher.findOne({
+      consume_by: consume_by,
+    });
+    if (!consumer) {
+      return res.status(404).json({ message: "Consumer not found" });
+    }
+
+    // Using $addToSet to avoid adding duplicates
+    const updatedConsumer = await consumerVsVoucher.findOneAndUpdate(
+      { _id: consumer._id },
+      { $addToSet: { favourite_stores: store_id } },
+      { new: true }
+    );
+
+    // Check if the update was successful
+    if (!updatedConsumer) {
+      return res
+        .status(400)
+        .json({ message: "Failed to add to favourite stores" });
+    }
+
+    res.json({
+      message: "Successfully added to favourite stores!",
+      data: updatedConsumer.favourite_stores,
+    });
+  } catch (error) {
+    console.error(error); // It's often a good idea to log the error
+    res.status(500).send("Error Found! Cannot add to favourite stores!");
+  }
+};
+const getFavouriteStores = async (req, res) => {
+  const consume_by = req.user._id; // Assuming the user ID is available from the session or JWT
+
+  try {
+    const consumer = await consumerVsVoucher
+      .findOne({ consume_by })
+      .populate({
+        path: "favourite_stores",
+        model: Store,
+        // Populate all fields of the store, you can customize which fields to include or exclude
+        select: "-__v", // Excludes the version key from the result, include other fields
+      })
+      .exec();
+
+    if (!consumer) {
+      return res.status(404).json({ message: "Consumer not found" });
+    }
+
+    if (consumer.favourite_stores.length === 0) {
+      return res.status(404).json({ message: "No favourite stores found" });
+    }
+
+    res.json({
+      message: "Favourite stores retrieved successfully",
+      data: consumer.favourite_stores,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error retrieving favourite stores!");
+  }
+};
 const clippedDetails = async (req, res) => {
   const consumerDetails = await consumerVsVoucher.find({
     consume_by: req.params.id,
@@ -173,4 +247,6 @@ module.exports = {
   clippedDetails,
   getvoucherByStore,
   getSingleVoucher,
+  addToFavourite,
+  getFavouriteStores,
 };

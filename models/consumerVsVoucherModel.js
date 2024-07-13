@@ -13,6 +13,11 @@ const consumerVsVoucherSchema = new mongoose.Schema(
       ref: "voucher",
       required: false,
     },
+    favourite_stores: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "stores",
+      required: false,
+    },
     voucher_limit: {
       type: Number,
       default: 4,
@@ -21,5 +26,8 @@ const consumerVsVoucherSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const ConsumerVsVoucher = mongoose.model('consumervsvouchers', consumerVsVoucherSchema);
+const ConsumerVsVoucher = mongoose.model(
+  "consumervsvouchers",
+  consumerVsVoucherSchema
+);
 module.exports = ConsumerVsVoucher;
