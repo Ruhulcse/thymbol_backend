@@ -10,7 +10,7 @@ const {
 } = require("../controllers/category");
 
 router.route("/category/create").post(saveCategoryData);
-router.route("/category/get-all-categories").get(protect, getAllCategories);
+router.route("/category/get-all-categories").get(getAllCategories);
 router
   .route("/category/:id")
   .get(protect, viewCategory)
