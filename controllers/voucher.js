@@ -7,7 +7,7 @@ const consumerVsVoucher = require("../models/consumerVsVoucherModel");
 const Store = require("../models/storeModel");
 
 const saveVoucherData = async (req, res) => {
-  const image = req.files.image;
+  const image = req.files?.image;
   const { voucherData } = req.body;
   console.log("voucher data ", voucherData);
 
@@ -15,16 +15,25 @@ const saveVoucherData = async (req, res) => {
     // Parse the voucherData if it's a string
     const parsedVoucherData =
       typeof voucherData === "string" ? JSON.parse(voucherData) : voucherData;
-    // Save store data into MongoDB
-    const voucherInfo = new Voucher(parsedVoucherData);
-    const createdVoucher = await voucherInfo.save(); // Remember to await the save operation
-    if (image) {
-      const updatedLogoDetails = await updateVoucherLogo(
-        createdVoucher._id,
-        image
-      );
+    // check voucher code exist or not
+    const isExist = await Voucher.find({ voucherCode: parsedVoucherData.voucherCode })
+    if (isExist.length) {
+      res.status(400).send({
+        message: "Voucher code Already exist!",
+        error: true
+      })
+    } else {
+      // Save store data into MongoDB
+      const voucherInfo = new Voucher(parsedVoucherData);
+      const createdVoucher = await voucherInfo.save(); // Remember to await the save operation
+      if (image) {
+        const updatedLogoDetails = await updateVoucherLogo(
+          createdVoucher._id,
+          image
+        );
+      }
+      res.status(201).send(createdVoucher);
     }
-    res.status(201).send(createdVoucher);
   } catch (error) {
     console.error("error is ", error);
     res.status(500).send(error);
