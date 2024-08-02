@@ -7,7 +7,7 @@ const asyncHandler = require("express-async-handler");
 const { getIO, userSockets } = require("../socket");
 
 const createPushNotification = async (req, res) => {
-  const newNotification = new pushNotification({ ...req.body });
+  const newNotification = new pushNotification({ ...req.body, created_by: req.user._id });
   const owner_id = req.user._id;
   //   console.log("owner id ", owner_id);
   const receivers = await getNotificationReceivers(owner_id);
@@ -86,7 +86,7 @@ const getPushNotification = async (req, res) => {
 };
 
 const getAllNotification = async (req, res) => {
-  const notications = await pushNotification.find();
+  const notications = await pushNotification.find({created_by: new mongoose.Types.ObjectId(req.user._id)});
   if (notications.length) {
     res.status(200).send({
       data: notications,
