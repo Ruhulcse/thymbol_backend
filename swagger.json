@@ -736,6 +736,81 @@
         }
       }
     },
+    "/create_review": {
+      "post": {
+        "tags": ["Review"],
+        "summary": "Create a new review",
+        "description": "Create a new review",
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "video",
+            "type": "file",
+            "description": "upload video for review",
+            "required": false
+          },
+          {
+            "in": "formData",
+            "name": "store",
+            "type": "string",
+            "description": "give store id here ",
+            "required": true,
+            "example": "668c858a30d293b69677195c"
+          },
+          {
+            "in": "formData",
+            "name": "creator",
+            "type": "string",
+            "description": "give current user id here ",
+            "required": true,
+            "example": "668c7fef30d293b69677193e"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "review added successfully"
+          },
+          "400": {
+            "description": "Invalid input data"
+          }
+        }
+      }
+    },
+    "/get_reviewbystoreid/{store_id}": {
+      "get": {
+        "tags": ["Review"],
+        "summary": "Get review by store id",
+        "description": "Get review by store id",
+        "produces": ["application/json"],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "store_id",
+            "in": "path",
+            "required": true,
+            "description": "store id",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "get reviwes."
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "review not found!"
+          }
+        }
+      }
+    },
     "/category/create": {
       "post": {
         "tags": ["Categories"],

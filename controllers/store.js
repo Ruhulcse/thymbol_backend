@@ -21,12 +21,16 @@ const saveStoreData = async (req, res) => {
       return res.status(400).json({ error: "Invalid JSON data" });
     }
   }
-  const prevStoreInfo = await Store.find({ owner: new mongoose.Types.ObjectId(req.user._id) })
-  const userInfo = await User.findById(new mongoose.Types.ObjectId(req.user._id)).select("-password");
+  const prevStoreInfo = await Store.find({
+    owner: new mongoose.Types.ObjectId(req.user._id),
+  });
+  const userInfo = await User.findById(
+    new mongoose.Types.ObjectId(req.user._id)
+  ).select("-password");
   if (userInfo.SubscriptionType === "free" && prevStoreInfo.length >= 2) {
     res.status(400).send({
-      message: "limit exceeded! Please update your subscription package!"
-    })
+      message: "limit exceeded! Please update your subscription package!",
+    });
   } else {
     const sencondParseData = JSON.parse(storeData);
     //console.log('sencondParseData', sencondParseData);

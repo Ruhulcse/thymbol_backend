@@ -7,16 +7,7 @@ const category = require("./categoryRoutes");
 const qrcode = require("./qrcodeRoutes");
 const passwordReset = require("./passwordResetRoutes");
 const pushNotification = require("./pushNotificationRoutes");
-module.exports = [
-  users,
-  store,
-  payments,
-  auth,
-  voucher,
-  category,
-  passwordReset,
-  qrcode,
-];
+const review = require("./reviewRoutes");
 
 module.exports = [
   users,
@@ -28,4 +19,5 @@ module.exports = [
   passwordReset,
   pushNotification,
   qrcode,
+  review,
 ];
