@@ -5,26 +5,44 @@ const { uploadToS3 } = require("../utils/functions");
 const Voucher = require("../models/voucherModel");
 const consumerVsVoucher = require("../models/consumerVsVoucherModel");
 const Store = require("../models/storeModel");
+const User = require("../models/userModel");
 
 const saveVoucherData = async (req, res) => {
-  const image = req.files.image;
+  const image = req.files?.image;
   const { voucherData } = req.body;
-  console.log("voucher data ", voucherData);
+  console.log("req.user", req.user);
 
   try {
     // Parse the voucherData if it's a string
     const parsedVoucherData =
       typeof voucherData === "string" ? JSON.parse(voucherData) : voucherData;
-    // Save store data into MongoDB
-    const voucherInfo = new Voucher(parsedVoucherData);
-    const createdVoucher = await voucherInfo.save(); // Remember to await the save operation
-    if (image) {
-      const updatedLogoDetails = await updateVoucherLogo(
-        createdVoucher._id,
-        image
-      );
+    const prevStoreInfo = await Voucher.find({ creator: new mongoose.Types.ObjectId(req.user._id) });
+    const userInfo = await User.findById(new mongoose.Types.ObjectId(req.user._id)).select("-password");
+    // check voucher code exist or not
+    const isExist = await Voucher.find({ voucherCode: parsedVoucherData.voucherCode })
+    if (isExist.length) {
+      res.status(400).send({
+        message: "Voucher code Already exist!",
+        error: true
+      })
+    } else {
+      if (userInfo.SubscriptionType === "free" && prevStoreInfo.length >= 2) {
+        res.status(400).send({
+          message: "limit exceeded! Please update your subscription package!"
+        })
+      } else {
+        // Save store data into MongoDB
+        const voucherInfo = new Voucher(parsedVoucherData);
+        const createdVoucher = await voucherInfo.save(); // Remember to await the save operation
+        if (image) {
+          const updatedLogoDetails = await updateVoucherLogo(
+            createdVoucher._id,
+            image
+          );
+        }
+        res.status(201).send(createdVoucher);
+      }
     }
-    res.status(201).send(createdVoucher);
   } catch (error) {
     console.error("error is ", error);
     res.status(500).send(error);
@@ -291,6 +309,29 @@ const updateVoucherDetails = async (req, res) => {
     });
   }
 };
+const getCouponsAnalytics = async (req, res) => {
+  const activeCoupons = await Voucher.find({
+    endDate: {
+      $gte: new Date()
+    },
+    creator: req.user._id
+  })
+  const expiredCupons = await Voucher.find({
+    endDate: {
+      $lt: new Date()
+    },
+    creator: req.user._id
+  })
+
+  res.status(200).send({
+    data: {
+      active_coupons: activeCoupons.length,
+      expire_coupons: expiredCupons.length
+    },
+    message: "Success!",
+    error: false
+  })
+}
 module.exports = {
   saveVoucherData,
   getAllVoucher,
@@ -302,4 +343,5 @@ module.exports = {
   getFavouriteStores,
   deleteVoucher,
   updateVoucherDetails,
+  getCouponsAnalytics
 };
