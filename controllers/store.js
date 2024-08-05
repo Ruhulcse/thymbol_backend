@@ -274,7 +274,7 @@ const viewStore = asyncHandler(async (req, res) => {
     });
 
     res.status(200).send({
-      data: { ...store, favouriteStoreCount },
+      data: { ...store._doc, favouriteStoreCount },
       favouriteStoreCount, // Include the count in the response
       message: "Store Data Successfully Retrieve!",
       error: false,
