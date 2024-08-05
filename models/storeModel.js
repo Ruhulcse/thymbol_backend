@@ -18,12 +18,12 @@ const storeSchema = new mongoose.Schema(
     ], // URLs to uploaded PDF/JPEG documents
     category: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+      ref: "Categories",
       required: true,
     },
     sub_category: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Subcategory",
+      ref: "Subcategories",
       required: false,
     },
     address: {

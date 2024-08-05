@@ -12,6 +12,7 @@ const {
   getAllCategoryForDropDown,
   getSubCategoriesWithParentCatId,
   storeNearMe,
+  searchStore,
 } = require("../controllers/store");
 //router.route("/store/create-store").post(protect, createStore);
 router.route("/store/create-store").post(
@@ -24,6 +25,7 @@ router.route("/store/create-store").post(
   // handleFileUploads
 );
 router.route("/store/nearme").post(storeNearMe);
+router.route("/store/search").post(searchStore);
 router.route("/store/owner-stores/:id").get(protect, getWonerAllStore);
 router.route("/favourite-store-count/:storeId").get(protect, getWonerAllStore);
 router.route("/store/categories").get(protect, getAllCategoryForDropDown);

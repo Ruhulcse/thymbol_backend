@@ -266,18 +266,16 @@ const updateStoreDocuments = async (storeId, documentsFile) => {
 // };
 
 const viewStore = asyncHandler(async (req, res) => {
-  let store = await Store.findById(req.params.id);
+  const store = await Store.findById(req.params.id);
   if (store) {
     // Find the count of users who have this store as their favorite
     const favouriteStoreCount = await ConsumerVsVoucher.countDocuments({
       favourite_stores: req.params.id,
     });
-    store.favouriteStoreCount = favouriteStoreCount;
+
     res.status(200).send({
-      data: {
-        ...store._doc,
-        favouriteStoreCount,
-      },
+      data: { ...store, favouriteStoreCount },
+      favouriteStoreCount, // Include the count in the response
       message: "Store Data Successfully Retrieve!",
       error: false,
     });
@@ -523,6 +521,56 @@ const storeNearMe = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+const searchStore = asyncHandler(async (req, res) => {
+  const searchTerm = req.body.searcItem;
+
+  if (!searchTerm) {
+    return res.status(400).json({
+      error: "Search term is required.",
+    });
+  }
+
+  try {
+    const query = {
+      $or: [
+        { "address.street": { $regex: searchTerm, $options: "i" } },
+        { "address.city": { $regex: searchTerm, $options: "i" } },
+        { "address.country": { $regex: searchTerm, $options: "i" } },
+        { "address.postal_code": { $regex: searchTerm, $options: "i" } },
+      ],
+    };
+
+    const stores = await Store.find(query)
+      .populate("category")
+      .populate("sub_category")
+      .limit(100) // Adjust the limit as necessary
+      .lean();
+
+    if (stores.length === 0) {
+      return res.status(404).json({
+        message: "No stores found with the specified address criteria.",
+      });
+    }
+
+    const storesByCategory = stores.reduce((result, store) => {
+      const categoryName = store.category.category_name;
+      if (!result[categoryName]) {
+        result[categoryName] = [];
+      }
+      result[categoryName].push(store);
+      return result;
+    }, {});
+
+    const response = Object.keys(storesByCategory).map((category) => ({
+      category,
+      stores: storesByCategory[category].slice(0, 5), // Limit to 5 stores per category
+    }));
+
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 module.exports = {
   saveStoreData,
@@ -533,4 +581,5 @@ module.exports = {
   getAllCategoryForDropDown,
   getSubCategoriesWithParentCatId,
   storeNearMe,
+  searchStore,
 };
