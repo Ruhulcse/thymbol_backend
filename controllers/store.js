@@ -7,6 +7,7 @@ const { uploadToS3 } = require("../utils/functions");
 const mongoose = require("mongoose");
 const Category = require("../models/categoryModel");
 const Subcategory = require("../models/subCategoryModel");
+const ConsumerVsVoucher = require("../models/consumerVsVoucherModel");
 
 const saveStoreData = async (req, res) => {
   //console.log("req.files", req.files)
@@ -265,10 +266,18 @@ const updateStoreDocuments = async (storeId, documentsFile) => {
 // };
 
 const viewStore = asyncHandler(async (req, res) => {
-  const store = await Store.findById(req.params.id);
+  let store = await Store.findById(req.params.id);
   if (store) {
+    // Find the count of users who have this store as their favorite
+    const favouriteStoreCount = await ConsumerVsVoucher.countDocuments({
+      favourite_stores: req.params.id,
+    });
+    store.favouriteStoreCount = favouriteStoreCount;
     res.status(200).send({
-      data: store,
+      data: {
+        ...store._doc,
+        favouriteStoreCount,
+      },
       message: "Store Data Successfully Retrieve!",
       error: false,
     });

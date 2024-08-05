@@ -25,6 +25,7 @@ router.route("/store/create-store").post(
 );
 router.route("/store/nearme").post(storeNearMe);
 router.route("/store/owner-stores/:id").get(protect, getWonerAllStore);
+router.route("/favourite-store-count/:storeId").get(protect, getWonerAllStore);
 router.route("/store/categories").get(protect, getAllCategoryForDropDown);
 router
   .route("/store/sub-categories/:id")
