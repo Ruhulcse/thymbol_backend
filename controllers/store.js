@@ -464,6 +464,11 @@ const getSubCategoriesWithParentCatId = asyncHandler(async (req, res) => {
 const storeNearMe = async (req, res) => {
   const latitude = parseFloat(req.body.coordinates[0]);
   const longitude = parseFloat(req.body.coordinates[1]);
+  const category = req.body.category;
+  const searchTerm = req.body.searchTerm;
+  const page = parseInt(req.body.page) || 1; // Default to page 1 if not provided
+  const limit = parseInt(req.body.limit) || 2; // Default to 10 documents per page if not provided
+  const skip = (page - 1) * limit;
 
   if (!longitude || !latitude) {
     return res
@@ -471,56 +476,135 @@ const storeNearMe = async (req, res) => {
       .json({ error: "Longitude and latitude are required." });
   }
 
-  try {
-    const storesNearby = await Store.aggregate([
-      {
+  if (searchTerm) {
+    try {
+      const query = {
+        $or: [
+          { "address.street": { $regex: searchTerm, $options: "i" } },
+          { "address.city": { $regex: searchTerm, $options: "i" } },
+          { "address.country": { $regex: searchTerm, $options: "i" } },
+          { "address.postal_code": { $regex: searchTerm, $options: "i" } },
+        ],
+      };
+
+      const stores = await Store.find(query)
+        .populate("category")
+        .populate("sub_category")
+        .limit(100) // Adjust the limit as necessary
+        .lean();
+
+      if (stores.length === 0) {
+        return res.status(404).json({
+          message: "No stores found with the specified address criteria.",
+        });
+      }
+
+      const storesByCategory = stores.reduce((result, store) => {
+        const categoryName = store.category.category_name;
+        if (!result[categoryName]) {
+          result[categoryName] = [];
+        }
+        result[categoryName].push(store);
+        return result;
+      }, {});
+
+      const response = Object.keys(storesByCategory).map((category) => {
+        const categoryStores = storesByCategory[category];
+        const paginatedStores = categoryStores.slice(skip, skip + limit); // Apply pagination
+
+        return {
+          category,
+          stores: paginatedStores,
+          page: page, // Include the current page in the response
+        };
+      });
+
+      return res.json(response);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  } else {
+    try {
+      const geoNearStage = {
         $geoNear: {
           near: { type: "Point", coordinates: [longitude, latitude] },
           distanceField: "distance",
           maxDistance: 1000000, // 100 kilometers
           spherical: true,
         },
-      },
-      {
+      };
+
+      const lookupStage = {
         $lookup: {
           from: "categories", // Ensure your category collection name matches here
           localField: "category",
           foreignField: "_id",
           as: "category_details",
         },
-      },
-      {
+      };
+
+      const unwindStage = {
         $unwind: "$category_details", // Unwind the array if needed, depending on how you want to process it
-      },
-      {
+      };
+
+      const matchStage = category
+        ? { $match: { "category_details.category_name": category } }
+        : {};
+
+      const sortStage = {
         $sort: { distance: 1 }, // Sort by distance ascending
-      },
-      {
+      };
+
+      const groupStage = {
         $group: {
           _id: "$category_details.category_name",
           stores: { $push: "$$ROOT" },
         },
-      },
-      {
+      };
+
+      const addFieldsStage = {
+        $addFields: {
+          stores: { $slice: ["$stores", skip, limit] }, // Apply pagination within each category
+        },
+      };
+
+      const projectStage = {
         $project: {
           _id: 0,
           category: "$_id",
-          stores: { $slice: ["$stores", 5] }, // Limit to 5 stores per category
+          stores: 1,
+          page: {
+            $literal: page,
+          },
         },
-      },
-    ]);
+      };
 
-    if (storesNearby.length === 0) {
-      return res.status(404).json({
-        message: "No nearby stores found within the specified category.",
-      });
+      const aggregationPipeline = [
+        geoNearStage,
+        lookupStage,
+        unwindStage,
+        ...(category ? [matchStage] : []),
+        sortStage,
+        groupStage,
+        addFieldsStage,
+        projectStage,
+      ];
+
+      const storesNearby = await Store.aggregate(aggregationPipeline);
+
+      if (storesNearby.length === 0) {
+        return res.status(404).json({
+          message: "No nearby stores found within the specified category.",
+        });
+      }
+
+      res.json(storesNearby);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
-
-    res.json(storesNearby);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
   }
 };
+
 const searchStore = asyncHandler(async (req, res) => {
   const searchTerm = req.body.searcItem;
 
