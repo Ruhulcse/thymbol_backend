@@ -25,7 +25,7 @@ exports.createReview = asyncHandler(async (req, res) => {
 });
 
 const uploadVideo = async (store_id, file) => {
-  const filetypes = /mp4|avi|mov|wmv|mkv/;
+  const filetypes = /mp4|avi|mov|wmv|mkv|webm/;
   const extname = filetypes.test(path.extname(file.name).toLowerCase());
   const mimetype = filetypes.test(file.mimetype);
   const fileExtension = file.mimetype.split("/")[1];
