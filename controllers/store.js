@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 const Category = require("../models/categoryModel");
 const Subcategory = require("../models/subCategoryModel");
 const ConsumerVsVoucher = require("../models/consumerVsVoucherModel");
+const Voucher = require("../models/voucherModel");
 
 const saveStoreData = async (req, res) => {
   //console.log("req.files", req.files)
@@ -467,7 +468,7 @@ const storeNearMe = async (req, res) => {
   const category = req.body.category;
   const searchTerm = req.body.searchTerm;
   const page = parseInt(req.body.page) || 1; // Default to page 1 if not provided
-  const limit = parseInt(req.body.limit) || 2; // Default to 10 documents per page if not provided
+  const limit = 20; // Default to 10 documents per page if not provided
   const skip = (page - 1) * limit;
 
   if (!longitude || !latitude) {
@@ -487,12 +488,26 @@ const storeNearMe = async (req, res) => {
         ],
       };
 
-      const stores = await Store.find(query)
+      const storeWithCategory = await Store.find(query)
         .populate("category")
         .populate("sub_category")
         .limit(100) // Adjust the limit as necessary
         .lean();
 
+      const stores = await Promise.all(
+        storeWithCategory.map(async (store) => {
+          const firstVoucher = await Voucher.findOne({ store: store._id })
+            .sort({ endDate: 1 }) // Sort by endDate to get the earliest one, if needed
+            .lean();
+
+          return {
+            ...store,
+            Discount: firstVoucher ? firstVoucher.discount : null,
+          };
+        })
+      );
+
+      // console.log("stores with first discount: ", storesWithFirstDiscount);
       if (stores.length === 0) {
         return res.status(404).json({
           message: "No stores found with the specified address criteria.",

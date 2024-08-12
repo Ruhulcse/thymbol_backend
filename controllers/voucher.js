@@ -16,20 +16,26 @@ const saveVoucherData = async (req, res) => {
     // Parse the voucherData if it's a string
     const parsedVoucherData =
       typeof voucherData === "string" ? JSON.parse(voucherData) : voucherData;
-    const prevStoreInfo = await Voucher.find({ creator: new mongoose.Types.ObjectId(req.user._id) });
-    const userInfo = await User.findById(new mongoose.Types.ObjectId(req.user._id)).select("-password");
+    const prevStoreInfo = await Voucher.find({
+      creator: new mongoose.Types.ObjectId(req.user._id),
+    });
+    const userInfo = await User.findById(
+      new mongoose.Types.ObjectId(req.user._id)
+    ).select("-password");
     // check voucher code exist or not
-    const isExist = await Voucher.find({ voucherCode: parsedVoucherData.voucherCode })
+    const isExist = await Voucher.find({
+      voucherCode: parsedVoucherData.voucherCode,
+    });
     if (isExist.length) {
       res.status(400).send({
         message: "Voucher code Already exist!",
-        error: true
-      })
+        error: true,
+      });
     } else {
       if (userInfo.SubscriptionType === "free" && prevStoreInfo.length >= 2) {
         res.status(400).send({
-          message: "limit exceeded! Please update your subscription package!"
-        })
+          message: "limit exceeded! Please update your subscription package!",
+        });
       } else {
         // Save store data into MongoDB
         const voucherInfo = new Voucher(parsedVoucherData);
@@ -58,6 +64,7 @@ const updateVoucherLogo = async (voucherId, file) => {
   const logoFilePath = `${directory}/${voucherId}/logo_${timestamp}.${fileExtension}`;
   if (mimetype && extname) {
     const result = await uploadToS3(file, logoFilePath);
+    console.log("result", result);
     if (result) {
       const logoDetails = {
         filePath: result.Location,
@@ -312,26 +319,26 @@ const updateVoucherDetails = async (req, res) => {
 const getCouponsAnalytics = async (req, res) => {
   const activeCoupons = await Voucher.find({
     endDate: {
-      $gte: new Date()
+      $gte: new Date(),
     },
-    creator: req.user._id
-  })
+    creator: req.user._id,
+  });
   const expiredCupons = await Voucher.find({
     endDate: {
-      $lt: new Date()
+      $lt: new Date(),
     },
-    creator: req.user._id
-  })
+    creator: req.user._id,
+  });
 
   res.status(200).send({
     data: {
       active_coupons: activeCoupons.length,
-      expire_coupons: expiredCupons.length
+      expire_coupons: expiredCupons.length,
     },
     message: "Success!",
-    error: false
-  })
-}
+    error: false,
+  });
+};
 module.exports = {
   saveVoucherData,
   getAllVoucher,
@@ -343,5 +350,5 @@ module.exports = {
   getFavouriteStores,
   deleteVoucher,
   updateVoucherDetails,
-  getCouponsAnalytics
+  getCouponsAnalytics,
 };
