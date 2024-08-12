@@ -16,6 +16,7 @@ const Login = asyncHandler(async (req, res) => {
         email: user.email,
         token: generateToken(user._id),
         userType: user.userType,
+        SubscriptionType: user.SubscriptionType
       },
       error: false,
     });
