@@ -549,22 +549,39 @@ const storeNearMe = async (req, res) => {
         },
       };
 
-      const lookupStage = {
+      const lookupCategoryStage = {
         $lookup: {
-          from: "categories", // Ensure your category collection name matches here
+          from: "categories",
           localField: "category",
           foreignField: "_id",
           as: "category_details",
         },
       };
 
-      const unwindStage = {
-        $unwind: "$category_details", // Unwind the array if needed, depending on how you want to process it
+      const unwindCategoryStage = {
+        $unwind: "$category_details",
       };
 
       const matchStage = category
         ? { $match: { "category_details.category_name": category } }
         : {};
+
+      const lookupVoucherStage = {
+        $lookup: {
+          from: "vouchers",
+          localField: "_id", // Assuming store ID in vouchers references the store's _id
+          foreignField: "store",
+          as: "vouchers",
+        },
+      };
+
+      const addFieldsDiscountStage = {
+        $addFields: {
+          Discount: {
+            $ifNull: [{ $arrayElemAt: ["$vouchers.discount", 0] }, 0],
+          },
+        },
+      };
 
       const sortStage = {
         $sort: { distance: 1 }, // Sort by distance ascending
@@ -577,7 +594,7 @@ const storeNearMe = async (req, res) => {
         },
       };
 
-      const addFieldsStage = {
+      const addFieldsPaginationStage = {
         $addFields: {
           stores: { $slice: ["$stores", skip, limit] }, // Apply pagination within each category
         },
@@ -596,12 +613,14 @@ const storeNearMe = async (req, res) => {
 
       const aggregationPipeline = [
         geoNearStage,
-        lookupStage,
-        unwindStage,
+        lookupCategoryStage,
+        unwindCategoryStage,
         ...(category ? [matchStage] : []),
+        lookupVoucherStage, // Lookup vouchers related to the store
+        addFieldsDiscountStage, // Add the first discount from vouchers to each store
         sortStage,
         groupStage,
-        addFieldsStage,
+        addFieldsPaginationStage,
         projectStage,
       ];
 
