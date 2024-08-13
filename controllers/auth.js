@@ -7,16 +7,19 @@ const mongoose = require("mongoose");
 const Login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({
+    $or: [{ email: email }, { phoneNumber: email }],
+  });
   if (user && (await user.matchPassword(password))) {
     res.json({
       message: "login success",
       data: {
         _id: user._id,
         email: user.email,
+        phoneNumber: user.phoneNumber,
         token: generateToken(user._id),
         userType: user.userType,
-        SubscriptionType: user.SubscriptionType
+        SubscriptionType: user.SubscriptionType,
       },
       error: false,
     });
@@ -101,13 +104,11 @@ const updateUser = asyncHandler(async (req, res) => {
         error: false,
       });
     } else {
-      res
-        .status(404)
-        .send({
-          message: "Data With given ID not found",
-          error: true,
-          statusCode: 404,
-        });
+      res.status(404).send({
+        message: "Data With given ID not found",
+        error: true,
+        statusCode: 404,
+      });
     }
   } else {
     res.status(400).send({
