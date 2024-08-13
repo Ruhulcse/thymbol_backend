@@ -4,7 +4,7 @@ const { YouCanPay, Lang, CurrencyCode } = require("youcan-payment-nodejs-sdk");
 const User = require("../models/userModel");
 
 const stripe = new Stripe(
-  "sk_test_51MhzlcJggWefJ04ANPv4Gf4MCvQCWWyjeeAWByiT8ncL3FgYbMfQ0HZYoihqDYXIqltVKsBwUFkhaMwyhxbaTeTk002Z92cnlV"
+  "sk_test_51MjXxCGcdhyTNSfZUXYvzuDQ5RLWuXamsfKuTVdALtARESqTSZhyi6OBxuDmBYi5PBFlRx4hiFzhgnu5biDHRHeN00dssLWXQ8"
 );
 
 const endpointSecret =
@@ -21,8 +21,10 @@ const createStripeSession = asyncHandler(async (req, res) => {
     );
 
     let customer = await getOrCreateCustomer(email);
+    console.log("customer ", customer);
 
     const hasActiveSubscription = await checkActiveSubscription(customer.id);
+    console.log("has active subscription");
 
     if (hasActiveSubscription) {
       const billingPortalSession = await stripe.billingPortal.sessions.create({
