@@ -165,6 +165,36 @@ const getTypeWiseUsers = asyncHandler(async (req, res) => {
     });
   }
 });
+
+const updatePayment = asyncHandler(async (req, res) => {
+  const { email, priceId, type } = req.body;
+  // console.log();
+
+  // Check if the required fields are present
+  // if (!email || !price_id || !type) {
+  //   return res
+  //     .status(400)
+  //     .json({ message: "Email, price_id, and type are required." });
+  // }
+
+  // Find the user by email
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found." });
+  }
+
+  // Update the user with the new price_id and type
+  user.subId = priceId;
+  user.SubscriptionType = type;
+  user.subscriptionActive = true;
+
+  // Save the updated user
+  await user.save();
+
+  // Respond with a success message
+  res.status(200).json({ message: "User updated successfully.", email });
+});
 module.exports = {
   Login,
   Registration,
@@ -174,4 +204,5 @@ module.exports = {
   deleteUser,
   getAllAgentUsers,
   getTypeWiseUsers,
+  updatePayment,
 };

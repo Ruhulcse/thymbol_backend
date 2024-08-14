@@ -13,7 +13,7 @@ const endpointSecret =
 // Create stripe
 const createStripeSession = asyncHandler(async (req, res) => {
   try {
-    const { priceId, email } = req.body;
+    const { priceId, email, key } = req.body;
 
     console.log(
       "Received request to create Stripe session with price ID:",
@@ -34,7 +34,12 @@ const createStripeSession = asyncHandler(async (req, res) => {
       return res.status(409).json({ redirectUrl: billingPortalSession.url });
     }
 
-    const session = await createCheckoutSession(customer.id, priceId, email);
+    const session = await createCheckoutSession(
+      customer.id,
+      priceId,
+      email,
+      key
+    );
 
     res.json({ id: session.id });
   } catch (error) {
@@ -73,10 +78,10 @@ const checkActiveSubscription = async (customerId) => {
   return subscriptions.data.length > 0;
 };
 
-const createCheckoutSession = async (customerId, priceId, email) => {
+const createCheckoutSession = async (customerId, priceId, email, key) => {
   return await stripe.checkout.sessions.create({
-    success_url: "https://www.thymbol.com/success",
-    cancel_url: "https://www.thymbol.com/cancel",
+    success_url: `https://www.thymbol.com/success?key=${key}`,
+    cancel_url: `https://www.thymbol.com/cancel?key=${key}`,
     payment_method_types: ["card"],
     mode: "subscription",
     billing_address_collection: "auto",

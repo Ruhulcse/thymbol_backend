@@ -11,7 +11,8 @@ const {
   updateUser,
   deleteUser,
   getAllAgentUsers,
-  getTypeWiseUsers
+  getTypeWiseUsers,
+  updatePayment,
 } = require("../controllers/auth");
 const { setProfilePic } = require("../controllers/upload");
 
@@ -19,6 +20,7 @@ const { setProfilePic } = require("../controllers/upload");
 //router.post('/register', Registration);
 router.route("/register").post(Registration);
 router.route("/login").post(Login);
+router.route("/payment_success").post(updatePayment);
 router.route("/upload").post(setProfilePic);
 router.route("/users").get(protect, getAllUsers);
 router.route("/specefic-type-of-users").post(getTypeWiseUsers);
