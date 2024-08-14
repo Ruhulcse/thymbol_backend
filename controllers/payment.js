@@ -4,7 +4,7 @@ const { YouCanPay, Lang, CurrencyCode } = require("youcan-payment-nodejs-sdk");
 const User = require("../models/userModel");
 
 const stripe = new Stripe(
-  "sk_test_51MjXxCGcdhyTNSfZUXYvzuDQ5RLWuXamsfKuTVdALtARESqTSZhyi6OBxuDmBYi5PBFlRx4hiFzhgnu5biDHRHeN00dssLWXQ8"
+  "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"
 );
 
 const endpointSecret =
@@ -205,7 +205,7 @@ const webhook = async (req, res) => {
 
 const youcanPay = asyncHandler(async (req, res) => {
   const youCanPayment = new YouCanPay(
-    "pri_sandbox_c42bc49a-7834-4670-a114-eb424",
+    "pri_d5b7307a-2b5f-4e14-a1f9-5e6adabe",
     true
   );
   try {
