@@ -8,7 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_KEY);
 const endpointSecret =
   "whsec_4ffa1ae6aee3122581b58aa72082065c34c6298e799d1810bd5c1b77cf2d4ba7";
 
-// Create stripe
+// Create stripe account
 const createStripeSession = asyncHandler(async (req, res) => {
   try {
     const { priceId, email, key } = req.body;
