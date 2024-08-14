@@ -3,9 +3,7 @@ const Stripe = require("stripe");
 const { YouCanPay, Lang, CurrencyCode } = require("youcan-payment-nodejs-sdk");
 const User = require("../models/userModel");
 
-const stripe = new Stripe(
-  "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"
-);
+const stripe = new Stripe(process.env.STRIPE_KEY);
 
 const endpointSecret =
   "whsec_4ffa1ae6aee3122581b58aa72082065c34c6298e799d1810bd5c1b77cf2d4ba7";
