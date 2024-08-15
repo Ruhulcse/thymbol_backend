@@ -204,7 +204,7 @@ const webhook = async (req, res) => {
 const youcanPay = asyncHandler(async (req, res) => {
   const youCanPayment = new YouCanPay(
     "pri_d5b7307a-2b5f-4e14-a1f9-5e6adabe",
-    true
+    false
   );
   try {
     const paymentUrl = await youCanPayment.getPaymentUrl(
