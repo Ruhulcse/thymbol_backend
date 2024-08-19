@@ -202,6 +202,7 @@ const webhook = async (req, res) => {
 };
 
 const youcanPay = asyncHandler(async (req, res) => {
+  const { amount } = req.body;
   const youCanPayment = new YouCanPay(
     "pri_d5b7307a-2b5f-4e14-a1f9-5e6adabe",
     false
@@ -209,7 +210,7 @@ const youcanPay = asyncHandler(async (req, res) => {
   try {
     const paymentUrl = await youCanPayment.getPaymentUrl(
       {
-        amount: 2000,
+        amount: amount * 1000,
         currency: CurrencyCode.MAD,
         customer_ip: "127.0.0.1",
         order_id: "XXXXXX",
