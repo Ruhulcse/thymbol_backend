@@ -99,7 +99,7 @@ const getAllVoucher = async (req, res) => {
 const getSingleVoucher = async (req, res) => {
   try {
     const voucher_id = req.params.id;
-    const vouchers = await Voucher.findById(voucher_id);
+    const vouchers = await Voucher.findById(voucher_id).populate("store");
     res.status(200).send(vouchers);
   } catch (error) {
     console.error("Error fetching vouchers:", error);
