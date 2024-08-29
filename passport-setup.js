@@ -10,21 +10,24 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/google/callback",
+      callbackURL: "https://www.thymbol.com/google/callback",
+      // callbackURL: "http://localhost:5000/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       //console.log('profile', profile);
       const registerUserWithThatEmail = await User.findOne({
         email: profile.emails[0].value,
       });
-    //   console.log("registerUserWithThatEmail", registerUserWithThatEmail, profile.emails[0].value);
+      //   console.log("registerUserWithThatEmail", registerUserWithThatEmail, profile.emails[0].value);
       if (registerUserWithThatEmail) {
-            if(registerUserWithThatEmail.token){
-                done(null, registerUserWithThatEmail);
-            }else{
-                registerUserWithThatEmail.token = generateToken(registerUserWithThatEmail._id)
-                done(null, registerUserWithThatEmail);
-            }
+        if (registerUserWithThatEmail.token) {
+          done(null, registerUserWithThatEmail);
+        } else {
+          registerUserWithThatEmail.token = generateToken(
+            registerUserWithThatEmail._id
+          );
+          done(null, registerUserWithThatEmail);
+        }
       } else {
         const newUser = {
           googleId: profile.id,
