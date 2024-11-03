@@ -465,6 +465,7 @@ const getSubCategoriesWithParentCatId = asyncHandler(async (req, res) => {
 const storeNearMe = async (req, res) => {
   const latitude = parseFloat(req.body.coordinates[0]);
   const longitude = parseFloat(req.body.coordinates[1]);
+  console.log("req.body", req.body);
   const category = req.body.category;
   const searchTerm = req.body.searchTerm;
   const page = parseInt(req.body.page) || 1; // Default to page 1 if not provided
@@ -544,7 +545,8 @@ const storeNearMe = async (req, res) => {
         $geoNear: {
           near: { type: "Point", coordinates: [longitude, latitude] },
           distanceField: "distance",
-          maxDistance: 1000000, // 100 kilometers
+          // maxDistance: 1000000, // 100 kilometers
+          maxDistance: 10000000, // 10000 kilometers
           spherical: true,
         },
       };
